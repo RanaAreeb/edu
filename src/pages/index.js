@@ -23,7 +23,7 @@ export default function Home() {
       {/* Grade Categories Section */}
       <div className="flex justify-center items-center p-4 md:p-10">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {["K", "1st", "2nd", "3rd", "4th", "5th"].map((grade, index) => (
+          {["K", "1st", "2nd", "3rd", "4th", "5th","All"].map((grade, index) => (
             <Link href={`/games/${grade}`} key={index}>
               <div className="flex flex-col items-center bg-lightGreen p-4 md:p-6 rounded-full shadow-lg cursor-pointer hover:bg-accent hover:text-white transition duration-300">
                 <div className="w-12 h-12 md:w-16 md:h-16 mb-2 md:mb-4 bg-primary rounded-full flex items-center justify-center">

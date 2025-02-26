@@ -1,8 +1,5 @@
-/** @type {import('next').NextConfig} */
-module.exports = {
-  reactStrictMode: true,
+export default {
   webpack(config, { isServer }) {
-    // Fallback for certain Node.js core modules when building for the client
     if (!isServer) {
       config.resolve.fallback = {
         tls: false,
