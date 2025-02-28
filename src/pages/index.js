@@ -8,7 +8,7 @@ export default function Home() {
       <header className="text-center p-6 md:p-10 bg-gradient-to-r  bg-lightGreen text-white">
         <div className="flex flex-col items-center justify-center">
      
-          <p className="text-2xl font-bold mt-3">Play and Learn Your Way</p>
+          <p className="text-4xl font-bold mt-4">Play and Learn Your Way</p>
         </div>
       </header>
 
