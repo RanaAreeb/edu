@@ -18,7 +18,7 @@ export default function GameCard({ game }) {
       className="relative p-4 rounded-lg shadow-xl group cursor-pointer"
     >
       {/* Game Image with Link */}
-      <a href={game.link} target="_blank" rel="noopener noreferrer">
+
         <div className="relative overflow-hidden rounded-lg mb-4">
           <img
             src={game.thumbnail}
@@ -26,7 +26,7 @@ export default function GameCard({ game }) {
             className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300"
           />
         </div>
-      </a>
+      
 
       {/* Play Game Button */}
       <button
