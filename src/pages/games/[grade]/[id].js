@@ -27,7 +27,7 @@ export default function GameDetails() {
     );
     if (selectedGame) {
       setGame(selectedGame);
-      setTotalPlays(selectedGame.totalPlays);
+      setTotalPlays(selectedGame.totalPlays || 0); // Ensure totalPlays is set correctly
       setRating(selectedGame.rating || null);
     } else {
       console.error("Game not found", { grade, id });
@@ -37,28 +37,36 @@ export default function GameDetails() {
   // Handle rating update
   const handleRating = async (newRating) => {
     setRating(newRating);
-    const response = await fetch(`/api/games/${grade}/${id}/like`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ rating: newRating }),
-    });
-    await response.json();
+    try {
+      const response = await fetch(`/api/games/${grade}/${id}/like`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rating: newRating }),
+      });
+      await response.json();
+    } catch (error) {
+      console.error("Failed to update rating:", error);
+    }
   };
 
   // Handle comment submission
   const handleComment = async () => {
-    const response = await fetch(`/api/games/${grade}/${id}/comment`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ comment }),
-    });
-    const data = await response.json();
-    if (data.message === "Comment added") {
-      setComment(""); // Clear comment input
+    try {
+      const response = await fetch(`/api/games/${grade}/${id}/comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ comment }),
+      });
+      const data = await response.json();
+      if (data.message === "Comment added") {
+        setComment(""); // Clear comment input
+      }
+    } catch (error) {
+      console.error("Failed to submit comment:", error);
     }
   };
 
@@ -66,14 +74,18 @@ export default function GameDetails() {
   const handlePlayOrExitGame = async () => {
     setIsGamePlaying((prev) => !prev);
     if (!isGamePlaying) {
-      const response = await fetch(`/api/games/${grade}/${id}/incrementPlay`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      setTotalPlays(data.totalPlays); // Update local state with the new play count
+      try {
+        const response = await fetch(`/api/games/${grade}/${id}/incrementPlay`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        setTotalPlays(data.totalPlays || 0); // Update local state with the new play count
+      } catch (error) {
+        console.error("Failed to increment play count:", error);
+      }
     }
   };
 
@@ -180,39 +192,75 @@ export default function GameDetails() {
       </div>
 
       {isGamePlaying && (
-        <div id="game-container" className="w-full max-w-2xl mt-6">
-          <div
-            className="iframe-container"
-            style={{
-              position: "relative",
-              paddingBottom: "96.25%",
-              height: 0,
-            }}
-          >
-            <iframe
-              id="game-frame"
-              src={game.link} // External game link
-              style={{
-                position: "absolute",
-                top: 0,
-                left: "15%", // Adjust to move iframe left
-                right: 0,
-                width: "150%",
-                height: "100%",
-                transform: "translateX(-25%)", // Move it left by 25% more, tweak if necessary
-              }}
-              title={game.title}
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-          </div>
-        </div>
-      )}
+  <div id="game-container" className="w-full max-w-2xl mt-6">
+    <div
+      className="iframe-container"
+      style={{
+        position: "relative",
+        paddingBottom: "96.25%",
+        paddingLeft:"150%", // 16:9 aspect ratio
+        height: 0,
+      }}
+    >
+      <iframe
+        id="game-frame"
+        src={game.link} // External game link
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "-15%",
+          right: 0,
+       
+          height: "100%",
+          border: "none",
+        }}
+        title={game.title}
+        frameBorder="0"
+        allowFullScreen
+      ></iframe>
+    </div>
+  </div>
+)}
+
+<style jsx>{`
+  .iframe-container {
+    max-width: 150%;
+    margin: 0 auto;
+  }
+
+  /* For mobile devices */
+  @media (max-width: 640px) {
+    #game-frame {
+      width: 72% !important;
+      height: 78% !important;
+      left: -17px!important;
+    }
+  }
+
+  /* For tablet devices */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    #game-frame {
+      width: 100% !important;
+      height: auto !important;
+    }
+  }
+
+  /* For larger desktop devices */
+  @media (min-width: 1025px) {
+    #game-frame {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+`}</style>
+
 
       {/* Total Plays */}
       <p className="text-sm text-gray-500 mt-6">
         Total Plays: {totalPlays.toLocaleString()}
       </p>
+
+   
     </motion.div>
   );
 }

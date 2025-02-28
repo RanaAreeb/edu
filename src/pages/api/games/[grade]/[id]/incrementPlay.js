@@ -1,24 +1,36 @@
-import { connectToDatabase } from "../../../../../utils/mongodb";
+import { MongoClient } from 'mongodb';
 
-export default async (req, res) => {
-  if (req.method === "POST") {
+const connectToDatabase = async () => {
+  const client = await MongoClient.connect(process.env.MONGODB_URI);
+  const db = client.db();
+  return db;
+};
+
+export default async function handler(req, res) {
+  const { grade, id } = req.query;
+
+  if (req.method === 'POST') {
     try {
-      const { id } = req.query;
       const db = await connectToDatabase();
-      const gamesCollection = db.collection("games");
+      const gamesCollection = db.collection('games');
 
-      // Increment total plays
-      const game = await gamesCollection.findOneAndUpdate(
-        { _id: id },
-        { $inc: { totalPlays: 1 } },
-        { returnDocument: "after" }
+      // Increment the 'totalPlays' field for the game
+      const updateResponse = await gamesCollection.updateOne(
+        { grade, id },
+        { $inc: { totalPlays: 1 } } // Increment total plays
       );
 
-      return res.status(200).json({ totalPlays: game.value.totalPlays });
+      if (updateResponse.modifiedCount === 1) {
+        // Retrieve the updated game data
+        const updatedGame = await gamesCollection.findOne({ grade, id });
+        return res.status(200).json({ totalPlays: updatedGame.totalPlays });
+      } else {
+        return res.status(400).json({ message: 'Failed to update play count' });
+      }
     } catch (error) {
-      res.status(500).json({ error: "Unable to increment plays" });
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   } else {
-    res.status(405).json({ error: "Method Not Allowed" });
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
-};
+}

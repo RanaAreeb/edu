@@ -1,11 +1,11 @@
 export const games = [
   {
     id: 1,
-    title: "Game 1",
+    title: "Zombie-Math",
     description: "This is a description for Game 1.",
     grade: "K",
     totalPlays: 1000,
-    link: "https://itch.io/embed-upload/12940850?color=333333", // URL of the game on itch.io
+    link: "https://zombiemath.netlify.app/", // URL of the game on itch.io
     thumbnail: "/Zombie-Math.jpg", // Thumbnail of the game
   },
   {

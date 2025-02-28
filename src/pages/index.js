@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+
 
 export default function Home() {
   return (
@@ -7,16 +7,8 @@ export default function Home() {
       {/* Header Section with Logo and Tagline */}
       <header className="text-center p-6 md:p-10 bg-gradient-to-r  bg-lightGreen text-white">
         <div className="flex flex-col items-center justify-center">
-          <Link href="/">
-            <Image
-              src="/EFG_Games.jpg" // Logo path
-              alt="EFG Games Logo"
-              width={180}  // Adjust logo size
-              height={180}
-              className="rounded-full"
-            />
-          </Link>
-          <p className="text-2xl font-bold ">Play and Learn Your Way</p>
+     
+          <p className="text-2xl font-bold mt-3">Play and Learn Your Way</p>
         </div>
       </header>
 
