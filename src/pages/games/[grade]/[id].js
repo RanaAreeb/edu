@@ -110,14 +110,17 @@ export default function GameDetails() {
       transition={{ duration: 0.5 }}
       className="flex flex-col items-center p-6 bg-gray-50 min-h-screen"
     >
-      {/* Game Thumbnail */}
-      <div className="w-full max-w-2xl overflow-hidden rounded-lg shadow-lg mb-6">
-        <img
-          src={game.thumbnail}
-          alt={game.title}
-          className="w-full h-72 object-cover transform hover:scale-105 transition-transform duration-300"
-        />
-      </div>
+    <div className="w-full max-w-md overflow-hidden rounded-lg shadow-lg mb-6 mx-auto" style={{ maxWidth: '300px' }}>
+  <img
+    src={game.thumbnail}
+    alt={game.title}
+    className="w-full h-auto object-contain transform hover:scale-105 transition-transform duration-300"
+    style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+  />
+</div>
+
+
+
 
       {/* Game Title */}
       <h1 className="text-4xl font-bold text-gray-900 mb-4">{game.title}</h1>
