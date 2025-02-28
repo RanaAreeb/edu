@@ -5,7 +5,7 @@ export const games = [
     description: "This is a description for Game 1.",
     grade: "K",
     totalPlays: 1000,
-    link: "https://zombiemath.netlify.app/", // URL of the game on itch.io
+    link: "https://itch.io/embed-upload/12949107?color=333333", // URL of the game on itch.io
     thumbnail: "/Zombie-Math.jpg", // Thumbnail of the game
   },
   {
