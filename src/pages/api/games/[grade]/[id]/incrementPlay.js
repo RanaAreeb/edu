@@ -1,4 +1,4 @@
-import { connectToDatabase } from "../../../../utils/mongodb";
+import { connectToDatabase } from "../../../../../utils/mongodb";
 
 export default async (req, res) => {
   if (req.method === "POST") {

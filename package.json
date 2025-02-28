@@ -11,6 +11,8 @@
   "dependencies": {
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^3.0.2",
+    "caniuse-lite": "^1.0.30001701",
+    "framer-motion": "^12.4.7",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.13.1",
     "mongoose": "^8.10.2",

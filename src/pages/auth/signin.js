@@ -86,23 +86,7 @@ export default function SignIn() {
             />
           </div>
 
-          {/* Account Type Dropdown */}
-          <div className="mb-4">
-            <label htmlFor="accountType" className="block text-sm text-gray-700">
-              Account Type
-            </label>
-            <select
-              id="accountType"
-              value={accountType}
-              onChange={(e) => setAccountType(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              required
-            >
-              <option value="parent">Parent</option>
-              <option value="institution">Institution</option>
-              <option value="individual">Individual</option>
-            </select>
-          </div>
+       
 
           {/* Error Message */}
           {error && <p className="text-red-500 text-sm">{error}</p>}

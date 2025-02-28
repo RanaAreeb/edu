@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -35,7 +36,14 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-darkGreen text-white p-4 shadow-md flex justify-end">
+    <header className="bg-darkGreen text-white p-4 shadow-md flex items-center justify-between">
+      {/* Centered Logo */}
+      <div className="flex items-center">
+        <Link href="/">
+          <Image src="/EFG_Games.jpg" alt="EFG Games Logo" width={100} height={100} />
+        </Link>
+      </div>
+
       {/* Right Section with Navigation */}
       <nav className="flex items-center space-x-4">
         {/* Show Sign In and Sign Up only if user is not logged in */}

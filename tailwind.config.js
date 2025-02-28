@@ -15,6 +15,8 @@ export default {
         lightYellow: '#FFEE58', // Light Yellow (Subtle background highlights)
         darkGreen: '#2C6A4F',  // Dark Green (Text or darker elements)
         text: '#2C3E50',       // Dark Text (Primary text color)
+        gray: '#9E9E9E',       // Gray color for softer elements
+        black: '#000000',      // Black (for contrast or dark text)
       },
     },
   },
