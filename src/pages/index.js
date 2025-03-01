@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa"; // For next and previous buttons
 import { games } from "../data/games"; // Import the games data
 import GameCard from "../components/GameCard"; // Import the GameCard component
-
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 export default function Home() {
   const [isMiddleSchool, setIsMiddleSchool] = useState(false); // State to toggle between Elementary and Middle School
 
@@ -149,10 +149,37 @@ export default function Home() {
       </div>
 
       {/* Footer Section */}
-      <footer className="bg-darkGreen text-white text-center py-4 mt-auto">
+       {/* Footer Section */}
+       <footer className="bg-darkGreen text-white text-center py-4 mt-auto">
         <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
-      </footer>
 
+        {/* Social Media Icons */}
+        <div className="flex justify-center space-x-6 mt-4">
+          <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
+            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+       
+          <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
+            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+        
+          </div>
+
+        {/* Legal Links (Terms and Conditions, Privacy Policy) */}
+        <div className="mt-4 text-sm">
+          <Link href="/" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              Terms and Conditions
+            </a>
+          </Link>
+          |
+          <Link href="/" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              Privacy Policy
+            </a>
+          </Link>
+        </div>
+      </footer>
       {/* CSS for Transition */}
       <style jsx>{`
         .fade-in {
