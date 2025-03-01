@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { FaThumbsUp, FaThumbsDown, FaComment, FaPlay, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { games } from "../../../data/games"; // Importing the game data directly from the data file
+import { FaFacebook, FaInstagram } from "react-icons/fa"; // Import social media icons
+import Link from "next/link"; // Import Link for Terms and Privacy links
 
 export default function GameDetails() {
   const router = useRouter();
@@ -104,157 +106,187 @@ export default function GameDetails() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col items-center p-6 bg-gray-50 min-h-screen bg-lightGreen"
-    >
-    <div className="w-full max-w-md overflow-hidden rounded-lg shadow-lg mb-6 mx-auto" style={{ maxWidth: '300px' }}>
-  <img
-    src={game.thumbnail}
-    alt={game.title}
-    className="w-full h-auto object-contain transform hover:scale-105 transition-transform duration-300"
-    style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
-  />
-</div>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-col items-center p-6 bg-gray-50 min-h-screen bg-lightGreen"
+      >
+        <div className="w-full max-w-md overflow-hidden rounded-lg shadow-lg mb-6 mx-auto" style={{ maxWidth: '300px' }}>
+          <img
+            src={game.thumbnail}
+            alt={game.title}
+            className="w-full h-auto object-contain transform hover:scale-105 transition-transform duration-300"
+            style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+          />
+        </div>
 
+        {/* Game Title */}
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">{game.title}</h1>
 
+        {/* Rating Buttons */}
+        <div className="flex items-center mb-4 space-x-4">
+          <button
+            onClick={() => handleRating("👍🏾")}
+            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
+              rating === "👍🏾"
+                ? "bg-green-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-500"
+            }`}
+            title="Like this game"
+          >
+            <FaThumbsUp className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => handleRating("👎🏾")}
+            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
+              rating === "👎🏾"
+                ? "bg-red-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-500"
+            }`}
+            title="Dislike this game"
+          >
+            <FaThumbsDown className="w-6 h-6" />
+          </button>
+        </div>
 
+        {/* Play Game / Exit Button */}
+        <div className="w-full max-w-2xl">
+          <button
+            onClick={handlePlayOrExitGame}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-darkGreen text-white rounded-md hover:bg-secondary transition-all duration-300"
+          >
+            {isGamePlaying ? (
+              <>
+                <FaTimes />
+                Quit
+              </>
+            ) : (
+              <>
+                <FaPlay />
+                Play
+              </>
+            )}
+          </button>
+        </div>
 
-      {/* Game Title */}
-      <h1 className="text-4xl font-bold text-gray-900 mb-4">{game.title}</h1>
+        {isGamePlaying && (
+          <div id="game-container" className="w-full max-w-2xl mt-6">
+            <div
+              className="iframe-container"
+              style={{
+                position: "relative",
+                paddingBottom: "96.25%",
+                paddingLeft:"150%", // 16:9 aspect ratio
+                height: 0,
+              }}
+            >
+              <iframe
+                id="game-frame"
+                src={game.link} // External game link
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: "-15%",
+                  right: 0,
+                  height: "100%",
+                  border: "none",
+                }}
+                title={game.title}
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        )}
 
+        <style jsx>{`
+          .iframe-container {
+            max-width: 150%;
+            margin: 0 auto;
+          }
 
+          /* For mobile devices */
+          @media (max-width: 640px) {
+            .iframe-container {
+              margin-top: -550px; /* Move iframe up for mobile */
+            }
 
-      {/* Rating Buttons */}
-       {/* Like/Dislike Buttons */}
-       <div className="flex items-center mb-4 space-x-4">
-        <button
-          onClick={() => handleRating("👍🏾")}
-          className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
-            rating === "👍🏾"
-              ? "bg-green-500 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-500"
-          }`}
-          title="Like this game"
-        >
-          <FaThumbsUp className="w-6 h-6" />
-        </button>
-        <button
-          onClick={() => handleRating("👎🏾")}
-          className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
-            rating === "👎🏾"
-              ? "bg-red-500 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-500"
-          }`}
-          title="Dislike this game"
-        >
-          <FaThumbsDown className="w-6 h-6" />
-        </button>
-      </div>
+            #game-frame {
+              width: 72% !important;
+              height: 86% !important;
+              left: -17px!important;
+            }
+          }
 
-   
+          /* For tablet devices */
+          @media (min-width: 641px) and (max-width: 1024px) {
+            .iframe-container {
+              max-width: 150%;
+              margin: -560 auto;
+            }
 
-      {/* Play Game / Exit Button */}
-      <div className="w-full max-w-2xl">
-        <button
-          onClick={handlePlayOrExitGame}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-darkGreen text-white rounded-md hover:bg-secondary transition-all duration-300"
-        >
-          {isGamePlaying ? (
-            <>
-              <FaTimes />
-              Quit
-            </>
-          ) : (
-            <>
-              <FaPlay />
-              Play
-            </>
-          )}
-        </button>
-      </div>
+            #game-frame {
+              width: 70% !important;
+              height: 70% !important;
+              left:-15px !important;
+            }
+          }
 
-      {isGamePlaying && (
-  <div id="game-container" className="w-full max-w-2xl mt-6">
-    <div
-      className="iframe-container"
-      style={{
-        position: "relative",
-        paddingBottom: "96.25%",
-        paddingLeft:"150%", // 16:9 aspect ratio
-        height: 0,
-      }}
-    >
-      <iframe
-        id="game-frame"
-        src={game.link} // External game link
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "-15%",
-          right: 0,
-       
-          height: "100%",
-          border: "none",
-        }}
-        title={game.title}
-        frameBorder="0"
-        allowFullScreen
-      ></iframe>
-    </div>
-  </div>
-)}
+          /* For larger desktop devices */
+          @media (min-width: 1025px) {
+            #game-frame {
+              width: 100% !important;
+              height: 100% !important;
+            }
+          }
+        `}</style>
 
-<style jsx>{`
-  .iframe-container {
-    max-width: 150%;
-    margin: 0 auto;
-  }
+        {/* Total Plays */}
+        <p className="text-sm text-gray-500 mt-6">
+          Total Plays: {totalPlays.toLocaleString()}
+        </p>
+      </motion.div>
 
-  /* For mobile devices */
-  @media (max-width: 640px) {
-   .iframe-container {
-   margin-top: -550px; /* Move iframe up for mobile */
-  }
+      {/* Footer Section */}
+      <footer className="bg-darkGreen text-white text-center py-4 mt-auto w-full">
+        <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
 
-    #game-frame {
-      width: 72% !important;
-      height: 86% !important;
-      left: -17px!important;
-    }
-  }
+        {/* Social Media Icons */}
+        <div className="flex justify-center space-x-6 mt-4">
+          <a
+            href="https://www.facebook.com/profile.php?id=61559394101077&sk=about"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
 
-  /* For tablet devices */
-  @media (min-width: 641px) and (max-width: 1024px) {
-   .iframe-container {
-    max-width: 150%;
-    margin: -560 auto;
-  }
-    #game-frame {
-      width: 70% !important;
-      height: 70% !important;
-      left:-15px !important;
-    }
-  }
+          <a
+            href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+        </div>
 
-  /* For larger desktop devices */
-  @media (min-width: 1025px) {
-    #game-frame {
-      width: 100% !important;
-      height: 100% !important;
-    }
-  }
-`}</style>
-
-
-      {/* Total Plays */}
-      <p  className="text-sm text-gray-500 mt-6">
-        Total Plays: {totalPlays.toLocaleString()}
-      </p>
-
-   
-    </motion.div>
+        {/* Legal Links (Terms and Conditions, Privacy Policy) */}
+        <div className="mt-4 text-sm">
+          <Link href="/terms-and-conditions" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              Terms and Conditions
+            </a>
+          </Link>
+          |
+          <Link href="/privacy-policy" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              Privacy Policy
+            </a>
+          </Link>
+        </div>
+      </footer>
+    </>
   );
 }

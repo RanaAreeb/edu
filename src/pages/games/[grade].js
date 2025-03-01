@@ -3,6 +3,8 @@ import { games } from "../../data/games"; // Import the games data
 import GameCard from "../../components/GameCard";
 import Link from "next/link";
 import Image from "next/image";
+import { FaFacebook, FaInstagram } from "react-icons/fa"; // Import social media icons
+
 export default function GradePage() {
   const router = useRouter();
   const { grade } = router.query;
@@ -15,7 +17,7 @@ export default function GradePage() {
   return (
     <div className="flex flex-col min-h-screen bg-lightGreen">
       {/* Header Section */}
-      <header className="text-center p-6 md:p-10 bg-gradient-to-r  bg-lightGreen text-white">
+      <header className="text-center p-6 md:p-10 bg-gradient-to-r bg-lightGreen text-white">
         <div className="flex flex-col items-center justify-center">
           <Link href="/">
             <Image
@@ -42,7 +44,7 @@ export default function GradePage() {
           {filteredGames.length > 0 ? (
             filteredGames.map((game) => <GameCard key={game.id} game={game} />)
           ) : (
-            <p className="text-center text-lg  text-white">Comming Soon!</p>
+            <p className="text-center text-lg  text-white">Coming Soon!</p>
           )}
         </div>
       </div>
@@ -50,6 +52,40 @@ export default function GradePage() {
       {/* Footer Section */}
       <footer className="bg-darkGreen text-white text-center py-4 mt-auto">
         <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
+
+        {/* Social Media Icons */}
+        <div className="flex justify-center space-x-6 mt-4">
+          <a
+            href="https://www.facebook.com/profile.php?id=61559394101077&sk=about"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+
+          <a
+            href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+        </div>
+
+        {/* Legal Links (Terms and Conditions, Privacy Policy) */}
+        <div className="mt-4 text-sm">
+          <Link href="/terms-and-conditions" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              Terms and Conditions
+            </a>
+          </Link>
+          |
+          <Link href="/privacy-policy" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              Privacy Policy
+            </a>
+          </Link>
+        </div>
       </footer>
     </div>
   );

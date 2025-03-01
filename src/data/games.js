@@ -19,7 +19,7 @@ export const games = [
     id: 3,
     title: "Balloon Math",
     description: "This is a description for Game 2.",
-    grade: "1st",
+    grade: "2nd",
     link: "https://itch.io/embed-upload/12951921?color=333333", // URL of the game on itch.io
     thumbnail: "/Balloon-Math.png", // Thumbnail of the game
   },
@@ -54,5 +54,13 @@ export const games = [
     grade: "1st",
     link: "https://itch.io/embed-upload/12952130?color=333333", // URL of the game on itch.io
     thumbnail: "/Sentence_saga.png", // Thumbnail of the game
+  },
+  {
+    id: 8,
+    title: "Zombie-Math",
+    description: "This is a description for Game 1.",
+    grade: "2nd",
+    link: "https://itch.io/embed-upload/12951543?color=333333", // URL of the game on itch.io
+    thumbnail: "/Zombie-Math.jpg", // Thumbnail of the game
   },
 ];
