@@ -217,7 +217,7 @@ export default function GameDetails() {
   @media (max-width: 640px) {
    .iframe-container {
     max-width: 150%;
-    margin: -560 auto;
+    margin: -1560 auto;
   }
 
     #game-frame {
