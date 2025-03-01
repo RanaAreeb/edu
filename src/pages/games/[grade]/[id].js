@@ -108,7 +108,7 @@ export default function GameDetails() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col items-center p-6 bg-gray-50 min-h-screen"
+      className="flex flex-col items-center p-6 bg-gray-50 min-h-screen bg-lightGreen"
     >
     <div className="w-full max-w-md overflow-hidden rounded-lg shadow-lg mb-6 mx-auto" style={{ maxWidth: '300px' }}>
   <img
@@ -125,70 +125,52 @@ export default function GameDetails() {
       {/* Game Title */}
       <h1 className="text-4xl font-bold text-gray-900 mb-4">{game.title}</h1>
 
-      {/* Game Description */}
-      <p className="text-lg text-gray-600 mb-6 text-center max-w-2xl">
-        {game.description}
-      </p>
+
 
       {/* Rating Buttons */}
-      <div className="flex justify-center gap-4 mb-6">
+       {/* Like/Dislike Buttons */}
+       <div className="flex items-center mb-4 space-x-4">
         <button
-          onClick={() => handleRating("👍")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
-            rating === "👍"
+          onClick={() => handleRating("👍🏾")}
+          className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
+            rating === "👍🏾"
               ? "bg-green-500 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-green-50"
+              : "bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-500"
           }`}
+          title="Like this game"
         >
-          <FaThumbsUp />
-          Like
+          <FaThumbsUp className="w-6 h-6" />
         </button>
         <button
-          onClick={() => handleRating("👎")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
-            rating === "👎"
+          onClick={() => handleRating("👎🏾")}
+          className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
+            rating === "👎🏾"
               ? "bg-red-500 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-red-50"
+              : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-500"
           }`}
+          title="Dislike this game"
         >
-          <FaThumbsDown />
-          Dislike
+          <FaThumbsDown className="w-6 h-6" />
         </button>
       </div>
 
-      {/* Comment Section */}
-      <div className="w-full max-w-2xl mb-6">
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Leave a comment..."
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-          rows={4}
-        />
-        <button
-          onClick={handleComment}
-          className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-all duration-300"
-        >
-          <FaComment />
-          Post Comment
-        </button>
-      </div>
+   
 
       {/* Play Game / Exit Button */}
       <div className="w-full max-w-2xl">
         <button
           onClick={handlePlayOrExitGame}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-all duration-300"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-darkGreen text-white rounded-md hover:bg-secondary transition-all duration-300"
         >
           {isGamePlaying ? (
             <>
               <FaTimes />
-              Exit Game
+              Quit
             </>
           ) : (
             <>
               <FaPlay />
-              Play Game
+              Play
             </>
           )}
         </button>
@@ -233,6 +215,11 @@ export default function GameDetails() {
 
   /* For mobile devices */
   @media (max-width: 640px) {
+   .iframe-container {
+    max-width: 150%;
+    margin: -560 auto;
+  }
+
     #game-frame {
       width: 72% !important;
       height: 78% !important;
@@ -242,9 +229,14 @@ export default function GameDetails() {
 
   /* For tablet devices */
   @media (min-width: 641px) and (max-width: 1024px) {
+   .iframe-container {
+    max-width: 150%;
+    margin: -560 auto;
+  }
     #game-frame {
-      width: 100% !important;
-      height: auto !important;
+      width: 70% !important;
+      height: 70% !important;
+      left:-15px !important;
     }
   }
 
@@ -259,7 +251,7 @@ export default function GameDetails() {
 
 
       {/* Total Plays */}
-      <p className="text-sm text-gray-500 mt-6">
+      <p  className="text-sm text-gray-500 mt-6">
         Total Plays: {totalPlays.toLocaleString()}
       </p>
 

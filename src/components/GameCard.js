@@ -18,15 +18,13 @@ export default function GameCard({ game }) {
       className="relative p-4 rounded-lg shadow-xl group cursor-pointer"
     >
       {/* Game Image with Link */}
-
-        <div className="relative overflow-hidden rounded-lg mb-4">
-          <img
-            src={game.thumbnail}
-            alt={game.title}
-            className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      
+      <div className="relative overflow-hidden rounded-lg mb-4">
+        <img
+          src={game.thumbnail} // Ensure this is the correct image URL
+          alt={game.title}
+          className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-300"
+        />
+      </div>
 
       {/* Play Game Button */}
       <button
@@ -37,10 +35,7 @@ export default function GameCard({ game }) {
         Play Game
       </button>
 
-      {/* Total Plays */}
-      <p className="text-sm text-gray-500 mt-4">
-        Total Plays: {game.totalPlays}
-      </p>
+  
     </motion.div>
   );
 }
