@@ -39,7 +39,7 @@ export default function Home() {
         <h2 className="text-3xl font-semibold text-center text-gray-800">
           {isMiddleSchool
             ? "Middle School Grades (5th-9th)"
-            : "Elementary School Grades (K-4)"}
+            : "Elementary School Grades (K-4th)"}
         </h2>
       </div>
 
