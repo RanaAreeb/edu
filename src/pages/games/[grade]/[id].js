@@ -216,8 +216,7 @@ export default function GameDetails() {
   /* For mobile devices */
   @media (max-width: 640px) {
    .iframe-container {
-    max-width: 150%;
-    margin: -1560 auto;
+   margin-top: -550px; /* Move iframe up for mobile */
   }
 
     #game-frame {
