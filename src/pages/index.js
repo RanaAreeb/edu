@@ -25,12 +25,12 @@ export default function Home() {
             <Image
               src="/EFG_Games.jpg" // Logo path
               alt="EFG Games Logo"
-              width={180} // Adjust logo size
-              height={180}
+              width={220} // Adjust logo size
+              height={220}
               className="rounded-full"
             />
           </Link>
-          <p className="text-4xl font-bold mt-4">Play and Learn Your Way</p>
+          <p className="text-2xl font-bold ">Play and Learn Your Way</p>
         </div>
       </header>
 
@@ -38,7 +38,7 @@ export default function Home() {
       <div className="bg-lightYellow p-6">
         <h2 className="text-3xl font-semibold text-center text-gray-800">
           {isMiddleSchool
-            ? "Middle School Grades (5th-6th)"
+            ? "Middle School Grades (5th-9th)"
             : "Elementary School Grades (K-4)"}
         </h2>
       </div>
