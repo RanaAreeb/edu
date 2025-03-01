@@ -221,7 +221,7 @@ export default function GameDetails() {
 
     #game-frame {
       width: 72% !important;
-      height: 78% !important;
+      height: 86% !important;
       left: -17px!important;
     }
   }
