@@ -12,6 +12,8 @@ export default function GameDetails() {
 
   const [game, setGame] = useState(null);
   const [rating, setRating] = useState(null);
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
   const [comment, setComment] = useState("");
   const [totalPlays, setTotalPlays] = useState(0);
   const [isGamePlaying, setIsGamePlaying] = useState(false);
@@ -45,8 +47,12 @@ export default function GameDetails() {
           return;
         }
         setGame(localGame);
+        setLikes(0);
+        setDislikes(0);
       } else {
         setGame(data.game);
+        setLikes(data.game.likes || 0);
+        setDislikes(data.game.dislikes || 0);
       }
 
       // Set the total plays from the database
@@ -85,17 +91,31 @@ export default function GameDetails() {
   };
 
   // Handle rating update
-  const handleRating = async (newRating) => {
-    setRating(newRating);
+  const handleRating = async (action) => {
+    if (rating === action) {
+      // If clicking the same button again, remove the rating
+      setRating(null);
+      return;
+    }
+
+    setRating(action);
     try {
       const response = await fetch(`/api/games/${grade}/${id}/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ rating: newRating }),
+        body: JSON.stringify({ action }),
       });
-      await response.json();
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error('Error updating rating:', data.error);
+        return;
+      }
+
+      setLikes(data.likes);
+      setDislikes(data.dislikes);
     } catch (error) {
       console.error("Failed to update rating:", error);
     }
@@ -188,18 +208,30 @@ export default function GameDetails() {
         {/* Rating Buttons */}
         <div className="flex items-center mb-4 space-x-4">
           <button
-            onClick={() => handleRating("👍🏾")}
-            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${rating === "👍🏾" ? "bg-green-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-500"}`}
-            title="Like this game"
+            onClick={() => handleRating('like')}
+            className="flex flex-col items-center justify-center p-2 rounded-lg"
           >
-            <FaThumbsUp className="w-6 h-6" />
+            <div className={`p-2 rounded-lg transition-all duration-300 ${
+              rating === 'like' 
+                ? "bg-green-500 text-white" 
+                : "bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-500"
+            }`}>
+              <FaThumbsUp className="w-6 h-6" />
+            </div>
+            <span className="text-sm mt-1">{likes}</span>
           </button>
           <button
-            onClick={() => handleRating("👎🏾")}
-            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${rating === "👎🏾" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-500"}`}
-            title="Dislike this game"
+            onClick={() => handleRating('dislike')}
+            className="flex flex-col items-center justify-center p-2 rounded-lg"
           >
-            <FaThumbsDown className="w-6 h-6" />
+            <div className={`p-2 rounded-lg transition-all duration-300 ${
+              rating === 'dislike'
+                ? "bg-red-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-500"
+            }`}>
+              <FaThumbsDown className="w-6 h-6" />
+            </div>
+            <span className="text-sm mt-1">{dislikes}</span>
           </button>
         </div>
 

@@ -1,109 +1,83 @@
 import { MongoClient } from 'mongodb';
 
-const connectToDatabase = async () => {
-  const client = await MongoClient.connect(process.env.MONGODB_URI);
-  const db = client.db();
-  return db;
-};
-
-// Get userId based on email (similar to the logic used in your comment API)
-const getUserId = async (email) => {
-  try {
-    const db = await connectToDatabase();
-    const usersCollection = db.collection('users');
-    const user = await usersCollection.findOne({ email });
-
-    if (!user) {
-      return null;
-    }
-
-    return user._id.toString(); // Return userId
-  } catch (error) {
-    console.error('Error fetching userId:', error);
-    return null;
-  }
-};
+const MONGODB_URI = process.env.MONGODB_URI;
 
 export default async (req, res) => {
-  const { grade, id } = req.query; // Get grade and id from the URL params
-
-  if (req.method === 'POST') {
-    try {
-      const { rating, email } = req.body; // Expect rating and email in the request body
-
-      // Get userId based on email
-      const userId = await getUserId(email);
-
-      if (!userId) {
-        return res.status(400).json({ error: 'User not found' });
-      }
-
-      const db = await connectToDatabase();
-      const gamesCollection = db.collection('games');
-      const userActionsCollection = db.collection('user_actions');
-
-      // Check if the user has already liked/disliked the game
-      const existingAction = await userActionsCollection.findOne({ userId, gameId: id });
-
-      if (existingAction) {
-        // If the user has already liked/disliked, update the action
-        if (existingAction.action === rating) {
-          return res.status(400).json({ error: `You already ${rating}d this game.` });
-        }
-
-        // Update the action in user_actions collection
-        await userActionsCollection.updateOne(
-          { userId, gameId: id },
-          { $set: { action: rating } }
-        );
-
-        // Adjust the like/dislike count in the games collection
-        if (rating === '👍') {
-          await gamesCollection.updateOne(
-            { gameId: id },
-            { $inc: { likes: 1, dislikes: -1 } }
-          );
-        } else if (rating === '👎') {
-          await gamesCollection.updateOne(
-            { gameId: id },
-            { $inc: { dislikes: 1, likes: -1 } }
-          );
-        }
-      } else {
-        // If the user hasn't liked/disliked yet, add their action
-        await userActionsCollection.insertOne({
-          userId,
-          gameId: id,
-          action: rating,
-        });
-
-        // Update the like/dislike count
-        if (rating === '👍') {
-          await gamesCollection.updateOne(
-            { gameId: id },
-            { $inc: { likes: 1 } }
-          );
-        } else if (rating === '👎') {
-          await gamesCollection.updateOne(
-            { gameId: id },
-            { $inc: { dislikes: 1 } }
-          );
-        }
-      }
-
-      // Fetch the updated game data from the database
-      const updatedGame = await gamesCollection.findOne({ gameId: id });
-
-      return res.status(200).json({
-        message: 'Rating updated',
-        likes: updatedGame.likes,
-        dislikes: updatedGame.dislikes,
-      });
-    } catch (error) {
-      console.error('Error updating rating:', error);
-      return res.status(500).json({ error: 'Failed to update rating' });
-    }
-  } else {
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { grade, id } = req.query;
+  const { action } = req.body; // 'like' or 'dislike'
+
+  if (!action || (action !== 'like' && action !== 'dislike')) {
+    return res.status(400).json({ error: 'Invalid action. Must be "like" or "dislike"' });
+  }
+
+  const client = new MongoClient(MONGODB_URI);
+
+  try {
+    await client.connect();
+    const db = client.db();
+    const gamesCollection = db.collection('games');
+
+    // Find the game first
+    const game = await gamesCollection.findOne({
+      grade,
+      id: id.toString()
+    });
+
+    if (!game) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+
+    // Initialize likes and dislikes if they don't exist
+    const updateQuery = {
+      $set: {}
+    };
+
+    if (typeof game.likes !== 'number') {
+      updateQuery.$set.likes = 0;
+    }
+    if (typeof game.dislikes !== 'number') {
+      updateQuery.$set.dislikes = 0;
+    }
+
+    // If we need to initialize the counts, do it first
+    if (Object.keys(updateQuery.$set).length > 0) {
+      await gamesCollection.updateOne(
+        { grade, id: id.toString() },
+        updateQuery
+      );
+    }
+
+    // Now handle the like/dislike action
+    let updateOperation;
+    if (action === 'like') {
+      updateOperation = {
+        $inc: { likes: 1 }
+      };
+    } else {
+      updateOperation = {
+        $inc: { dislikes: 1 }
+      };
+    }
+
+    const result = await gamesCollection.findOneAndUpdate(
+      { grade, id: id.toString() },
+      updateOperation,
+      { returnDocument: 'after' }
+    );
+
+    return res.status(200).json({
+      likes: result.value.likes || 0,
+      dislikes: result.value.dislikes || 0
+    });
+
+  } catch (error) {
+    console.error('Error updating rating:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await client.close();
   }
 };
