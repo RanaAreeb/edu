@@ -16,6 +16,9 @@ export default function GameDetails() {
   const [totalPlays, setTotalPlays] = useState(0);
   const [isGamePlaying, setIsGamePlaying] = useState(false);
 
+  const [playTime, setPlayTime] = useState(0); // To track time played
+  const [playTimer, setPlayTimer] = useState(null); // To store the timer
+  const [iframeLoaded, setIframeLoaded] = useState(false); // To track iframe load
   // UseEffect to fetch the game data when the router is ready
   useEffect(() => {
     if (!router.isReady) return;
@@ -72,25 +75,42 @@ export default function GameDetails() {
     }
   };
 
-  // Handle play game or exit game action
   const handlePlayOrExitGame = async () => {
-    setIsGamePlaying((prev) => !prev);
-    if (!isGamePlaying) {
-      try {
-        const response = await fetch(`/api/games/${grade}/${id}/incrementPlay`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        setTotalPlays(data.totalPlays || 0); // Update local state with the new play count
-      } catch (error) {
-        console.error("Failed to increment play count:", error);
+    setIsGamePlaying((prev) => !prev); // Toggle game state
+  
+    if (isGamePlaying) {
+      // Stop the timer when the game is exited
+      clearInterval(playTimer);
+      setPlayTimer(null);
+  
+      if (playTime >= 30) {
+        // Update total plays if the game was played for 30 seconds or more
+        try {
+          const response = await fetch(`/api/games/${grade}/${id}/incrementPlay`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const data = await response.json();
+          setTotalPlays(data.totalPlays || 0); // Update total plays
+        } catch (error) {
+          console.error("Failed to increment play count:", error);
+        }
       }
+    } else {
+      setPlayTime(0); // Reset play time when game starts
+      const timer = setInterval(() => {
+        setPlayTime((prev) => prev + 1); // Increase play time by 1 second
+      }, 1000);
+      setPlayTimer(timer);
     }
   };
-
+  
+  const handleIframeLoad = () => {
+    setIframeLoaded(true); // Set iframeLoaded to true when iframe is loaded
+  };
+  
   if (!game) {
     return (
       <div className="text-center p-10">
@@ -124,6 +144,10 @@ export default function GameDetails() {
 
         {/* Game Title */}
         <h1 className="text-4xl font-bold text-gray-900 mb-4">{game.title}</h1>
+        {/* Game Description */}
+      <p className="text-lg text-gray-600 mb-6 text-center max-w-2xl">
+        {game.description}
+      </p>
 
         {/* Rating Buttons */}
         <div className="flex items-center mb-4 space-x-4">
@@ -184,9 +208,11 @@ export default function GameDetails() {
             >
               <iframe
                 id="game-frame"
+                onLoad={handleIframeLoad}
                 src={game.link} // External game link
                 style={{
                   position: "absolute",
+                  
                   top: 0,
                   left: "-15%",
                   right: 0,
@@ -210,7 +236,7 @@ export default function GameDetails() {
           /* For mobile devices */
           @media (max-width: 640px) {
             .iframe-container {
-              margin-top: -550px; /* Move iframe up for mobile */
+              margin-top: -530px; /* Move iframe up for mobile */
             }
 
             #game-frame {
@@ -243,10 +269,7 @@ export default function GameDetails() {
           }
         `}</style>
 
-        {/* Total Plays */}
-        <p className="text-sm text-gray-500 mt-6">
-          Total Plays: {totalPlays.toLocaleString()}
-        </p>
+<p className="text-sm text-gray-500 mt-6">Total Plays: {totalPlays}</p>
       </motion.div>
 
       {/* Footer Section */}

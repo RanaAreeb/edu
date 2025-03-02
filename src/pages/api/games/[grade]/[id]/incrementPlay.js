@@ -1,41 +1,42 @@
-import { MongoClient } from 'mongodb';
+import fs from 'fs';
+import path from 'path';
 
-const connectToDatabase = async () => {
-  const client = await MongoClient.connect(process.env.MONGODB_URI);
-  const db = client.db();
-  return db;
-};
+// Path to the games.json file
+const dataPath = path.resolve('src', 'data', 'games.json');
 
-export default async (req, res) => {
-  const { grade, id } = req.query; // Get grade and id from the URL params
+export default async function handler(req, res) {
+  const { method } = req;
+  const { grade, id } = req.query; // Dynamic route params
 
-  if (req.method === 'POST') {
+  if (method === 'POST') {
     try {
-      const db = await connectToDatabase();
-      const gamesCollection = db.collection('games');
-
-      // Find the game and increment the play count
-      const game = await gamesCollection.findOne({ id: id, grade });
-
-      if (!game) {
-        return res.status(404).json({ error: 'Game not found' });
+      // Step 1: Check if the file exists
+      if (!fs.existsSync(dataPath)) {
+        return res.status(500).json({ message: 'Game data file not found' });
       }
 
-      // Increment the play count
-      await gamesCollection.updateOne(
-        { id: id, grade },
-        { $inc: { totalPlays: 1 } }
-      );
+      // Step 2: Read the local data file to get the game data
+      const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
-      // Return the updated play count
-      const updatedGame = await gamesCollection.findOne({ id: id, grade });
+      // Find the game with the specific id and grade
+      const game = data.find((g) => g.id === id && g.grade === grade);
+      if (!game) {
+        return res.status(404).json({ message: 'Game not found' });
+      }
 
-      return res.status(200).json({ totalPlays: updatedGame.totalPlays });
+      // Step 3: Increment the play count
+      game.totalPlays += 1;
+
+      // Step 4: Save the updated data back to the games.json file
+      fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+
+      // Step 5: Respond with the updated total plays
+      return res.status(200).json({ totalPlays: game.totalPlays });
     } catch (error) {
-      console.error('Error incrementing play count:', error);
-      return res.status(500).json({ error: 'Failed to increment play count' });
+      console.error('Error:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
     }
   } else {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ message: 'Method Not Allowed' });
   }
-};
+}

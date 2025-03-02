@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "grade": "K",
+    "totalPlays": 12,
+    "title": "Awesome Game",
+    "description": "Description of the game",
+    "link": "https://link-to-game.com"
+  },
+  {
+    "id": "2",
+    "grade": "1",
+    "totalPlays": 15,
+    "title": "Another Game",
+    "description": "Description of another game",
+    "link": "https://link-to-another-game.com"
+  }
+]

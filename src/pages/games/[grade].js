@@ -31,16 +31,28 @@ export default function GradePage() {
           <p className="text-1xl font-bold ">Play and Learn Your Way</p>
         </div>
       </header>
-      <header className="text-center p-6 md:p-10 bg-lightGreen text-white">
+      
+      
+
+      <header className="text-center p-6 md:p-2 bg-lightGreen text-white">
         <h1 className="text-3xl md:text-5xl font-bold mb-4">{grade} Grade Games</h1>
         <p className="text-base md:text-xl">
           Explore all the {grade} games and have fun while learning!
         </p>
       </header>
+      {/* Go Back Button */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => router.back()}
+          className="bg-darkGreen text-white px-4 py-2 rounded-lg text-lg  transition-colors duration-300"
+        >
+          Go Back
+        </button>
+      </div>
 
       {/* Games Grid Section */}
       <div className="flex justify-center items-center p-4 md:p-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredGames.length > 0 ? (
             filteredGames.map((game) => <GameCard key={game.id} game={game} />)
           ) : (
