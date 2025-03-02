@@ -13,23 +13,35 @@ export default function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    // Send login data to the API, including account type
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password, accountType }),
-    });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, accountType }),
+      });
 
-    const data = await response.json();
-    if (response.ok) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("accountType", data.accountType);
-      router.push("/");
-    } else {
-      setError(data.error);
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Store the token and account type
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("accountType", data.accountType);
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new Event('authChange'));
+        
+        // Redirect to home page
+        router.push("/");
+      } else {
+        setError(data.error || "An error occurred during sign in");
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
+      setError("An error occurred during sign in");
     }
   };
 
@@ -98,9 +110,9 @@ export default function SignIn() {
           {/* Link to Sign Up */}
           <p className="mt-4 text-center text-sm text-gray-600">
             Don't have an account?{" "}
-            <a href="/auth/signup" className="text-primary hover:underline">
+            <Link href="/auth/signup" className="text-primary hover:underline">
               Sign Up
-            </a>
+            </Link>
           </p>
         </div>
       </div>
