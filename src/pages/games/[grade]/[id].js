@@ -323,24 +323,27 @@ export default function GameDetails() {
         </div>
 
         {/* Legal Links (Terms and Conditions, Privacy Policy) */}
-        <div className="mt-4 text-sm">
-          <Link href="/terms-and-conditions" legacyBehavior>
-            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-              Terms and Conditions
-            </a>
-          </Link>
-          |
-          <Link href="/privacy-policy" legacyBehavior>
-            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-              Privacy Policy
-            </a>
-          </Link>
-          <Link href="/about" legacyBehavior>
+       {/* Legal Links */}
+  {/* Legal Links */}
+  <div className="mt-4 text-sm">
+    <Link href="/" legacyBehavior>
+      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+        Terms and Conditions
+      </a>
+    </Link>
+    |
+    <Link href="/" legacyBehavior>
+      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+        Privacy Policy
+      </a>
+    </Link>
+    |
+    <Link href="/about" legacyBehavior>
       <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
         About
       </a>
     </Link>
-        </div>
+  </div>
       </footer>
     </>
   );

@@ -16,59 +16,57 @@ export default async (req, res) => {
   if (req.method === 'POST') {
     try {
       await client.connect(); // Connect to MongoDB
-
       const db = client.db(); // Use the default database
       const gamesCollection = db.collection('games'); // Target the games collection
 
-      // Find the game based on grade and id
+      // Find the game in local data
       const game = games.find((g) => g.grade === grade && g.id.toString() === id);
-
-      // Debug: Log the search criteria
-      console.log("Search criteria:", { grade, id: id.toString() });
 
       if (!game) {
         return res.status(404).json({ error: 'Game not found in local data' });
       }
 
-      // Try to update first, if the game exists
-      const updateResult = await gamesCollection.findOneAndUpdate(
-        { 
-          grade: grade,
-          id: id.toString()
-        },
-        { 
-          $inc: { totalPlays: 1 }
-        },
-        { 
-          returnDocument: 'after'
-        }
-      );
-
-      // If game was found and updated
-      if (updateResult.value) {
-        return res.status(200).json({
-          game: updateResult.value,
-          totalPlays: updateResult.value.totalPlays
-        });
-      }
-
-      // If game wasn't found, create it
-      const newGame = {
-        ...game,
-        id: id.toString(),
+      // First, try to find the game
+      let dbGame = await gamesCollection.findOne({
         grade: grade,
-        totalPlays: 1
-      };
+        id: id.toString()
+      });
 
-      const insertResult = await gamesCollection.insertOne(newGame);
-      
-      if (!insertResult.acknowledged) {
-        return res.status(500).json({ error: 'Failed to create game in database' });
+      let result;
+      if (!dbGame) {
+        // If game doesn't exist, insert it with totalPlays = 1
+        result = await gamesCollection.insertOne({
+          ...game,
+          id: id.toString(),
+          grade: grade,
+          totalPlays: 1
+        });
+        dbGame = {
+          ...game,
+          id: id.toString(),
+          grade: grade,
+          totalPlays: 1
+        };
+      } else {
+        // If game exists, increment totalPlays
+        result = await gamesCollection.findOneAndUpdate(
+          { 
+            grade: grade,
+            id: id.toString()
+          },
+          { 
+            $inc: { totalPlays: 1 }
+          },
+          { 
+            returnDocument: 'after'
+          }
+        );
+        dbGame = result.value;
       }
 
       return res.status(200).json({
-        game: newGame,
-        totalPlays: 1
+        game: dbGame,
+        totalPlays: dbGame.totalPlays
       });
 
     } catch (error) {
@@ -82,17 +80,16 @@ export default async (req, res) => {
   if (req.method === 'GET') {
     try {
       await client.connect(); // Connect to MongoDB
-
       const db = client.db(); // Use the default database
       const gamesCollection = db.collection('games'); // Target the games collection
 
-      // Find the game in MongoDB
-      const dbGame = await gamesCollection.findOne({ 
+      // First try to find the game
+      let dbGame = await gamesCollection.findOne({
         grade: grade,
         id: id.toString()
       });
 
-      // If game doesn't exist in DB, get it from local data and initialize it
+      // If game doesn't exist, create it
       if (!dbGame) {
         const game = games.find((g) => g.grade === grade && g.id.toString() === id);
         if (!game) {
@@ -107,11 +104,7 @@ export default async (req, res) => {
         };
 
         await gamesCollection.insertOne(newGame);
-        
-        return res.status(200).json({
-          game: newGame,
-          totalPlays: 0
-        });
+        dbGame = newGame;
       }
 
       return res.status(200).json({
