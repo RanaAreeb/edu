@@ -97,6 +97,11 @@ export default function GradePage() {
               Privacy Policy
             </a>
           </Link>
+          <Link href="/about" legacyBehavior>
+      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+        About
+      </a>
+    </Link>
         </div>
       </footer>
     </div>
