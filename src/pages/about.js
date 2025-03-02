@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
+
 export default function About() {
   return (
     <div className="flex flex-col min-h-screen bg-lightYellow">
@@ -13,10 +14,10 @@ export default function About() {
               alt="EFG Games Logo"
               width={180} // Adjust logo size
               height={180}
-              className="rounded-full"
+              className="rounded-full object-contain" // Added object-contain for proper scaling
             />
           </Link>
-          <p className="text-1xl font-bold">Play and Learn Your Way</p>
+          <p className="text-xl font-bold">Play and Learn Your Way</p>
         </div>
       </header>
 
@@ -27,17 +28,21 @@ export default function About() {
             About EFG Games
           </h1>
           <p className="text-lg text-gray-800 mb-4">
-            EFG Games is dedicated to making learning fun and engaging for students of all grades. Our games cover various subjects such as math, science, and language arts, providing an interactive experience to help students improve their skills.
+            Clifton Manneh is the founder of EFG Games, which is dedicated to making learning fun and engaging for students of all grades. Our games cover various subjects such as math, science, coding, and language arts, providing an interactive experience to help students improve their skills.
           </p>
           <p className="text-lg text-gray-800 mb-4">
             Our platform is designed to cater to both elementary and middle school students, with age-appropriate content that aligns with the curriculum. We believe that learning should be enjoyable, and our games aim to foster a love for learning.
           </p>
           <p className="text-lg text-gray-800 mb-4">
+            In addition to EFG Games, Clifton is also the founder of Tutorants, a community and mentorship-based platform that provides 24-hour tutoring to students in need of academic support. Tutorants has 5,000 expert tutors specializing in all academic disciplines. Clifton's journey towards creating EFG Games began in Monrovia, Liberia, where he was born, and his dedication to education was further fueled by the loss of his little sister and the hardships his family faced. With a degree in Organizational Communications from Metropolitan State University, Clifton is passionate about making learning accessible for all.
+          </p>
+          <p className="text-lg text-gray-800 mb-4">
             Join us today and explore a wide range of educational games to make your learning journey more fun!
           </p>
+
           <div className="text-center">
             <Link href="/" passHref>
-              <button className="bg-darkGreen text-white px-6 py-2 rounded-lg  transition-colors duration-300">
+              <button className="bg-darkGreen text-white px-6 py-2 rounded-lg transition-colors duration-300">
                 Go Back Home
               </button>
             </Link>
@@ -46,41 +51,48 @@ export default function About() {
       </div>
 
       {/* Footer Section */}
-<footer className="bg-darkGreen text-white text-center py-4 mt-auto">
-  <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
+      <footer className="bg-darkGreen text-white text-center py-4 mt-auto">
+        <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
 
-  {/* Social Media Icons */}
-  <div className="flex justify-center space-x-6 mt-4">
-    <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
-      <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-    </a>
-    <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
-      <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-    </a>
-  </div>
+        {/* Social Media Icons */}
+        <div className="flex justify-center space-x-6 mt-4">
+          <a
+            href="https://www.facebook.com/profile.php?id=61559394101077&sk=about"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+          <a
+            href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+        </div>
 
-  {/* Legal Links */}
-  <div className="mt-4 text-sm">
-    <Link href="/" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-        Terms and Conditions
-      </a>
-    </Link>
-    |
-    <Link href="/" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-        Privacy Policy
-      </a>
-    </Link>
-    |
-    <Link href="/about" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-        About
-      </a>
-    </Link>
-  </div>
-</footer>
-
+        {/* Legal Links */}
+        <div className="mt-4 text-sm">
+          <Link href="/" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              Terms and Conditions
+            </a>
+          </Link>
+          |
+          <Link href="/" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              Privacy Policy
+            </a>
+          </Link>
+          |
+          <Link href="/about" legacyBehavior>
+            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+              About
+            </a>
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { FaThumbsUp, FaThumbsDown, FaComment, FaPlay, FaTimes } from "react-icons/fa";
+import { FaThumbsUp, FaThumbsDown, FaPlay, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { games } from "../../../data/games"; // Importing the game data directly from the data file
 import { FaFacebook, FaInstagram } from "react-icons/fa"; // Import social media icons
@@ -19,23 +19,68 @@ export default function GameDetails() {
   const [playTime, setPlayTime] = useState(0); // To track time played
   const [playTimer, setPlayTimer] = useState(null); // To store the timer
   const [iframeLoaded, setIframeLoaded] = useState(false); // To track iframe load
-  // UseEffect to fetch the game data when the router is ready
+
+  // Fetch the game data when the router is ready
   useEffect(() => {
     if (!router.isReady) return;
     fetchGameData();
   }, [router.isReady, grade, id]);
 
-  // Fetch game data from the games array based on the grade and id
-  const fetchGameData = () => {
-    const selectedGame = games.find(
-      (g) => g.id.toString() === id && g.grade === grade
-    );
-    if (selectedGame) {
-      setGame(selectedGame);
-      setTotalPlays(selectedGame.totalPlays || 0); // Ensure totalPlays is set correctly
-      setRating(selectedGame.rating || null);
-    } else {
-      console.error("Game not found", { grade, id });
+  const fetchGameData = async () => {
+    try {
+      // Get the game data from the database API
+      const response = await fetch(`/api/games/${grade}/${id}`);
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error('Error fetching game:', data.error);
+        return;
+      }
+
+      // If the game is not in the database, get it from local data
+      if (!data.game) {
+        const localGame = games.find(g => g.grade === grade && g.id.toString() === id);
+        if (!localGame) {
+          console.error('Game not found in local data');
+          return;
+        }
+        setGame(localGame);
+      } else {
+        setGame(data.game);
+      }
+
+      // Set the total plays from the database
+      setTotalPlays(data.totalPlays || 0);
+    } catch (error) {
+      console.error('Error fetching game data:', error);
+    }
+  };
+
+  // Remove the separate fetchTotalPlays function since we're getting it with game data
+  const incrementPlayCount = async () => {
+    try {
+      const response = await fetch(`/api/games/${grade}/${id}/incrementPlay`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error('Error incrementing play count:', data.error);
+        return;
+      }
+
+      // Update both the game and totalPlays state with the new data
+      if (data.game) {
+        setGame(data.game);
+      }
+      if (data.totalPlays !== undefined) {
+        setTotalPlays(data.totalPlays);
+      }
+    } catch (error) {
+      console.error("Failed to increment play count:", error);
     }
   };
 
@@ -75,42 +120,33 @@ export default function GameDetails() {
     }
   };
 
+  // Handle play or exit game logic
   const handlePlayOrExitGame = async () => {
-    setIsGamePlaying((prev) => !prev); // Toggle game state
-  
-    if (isGamePlaying) {
-      // Stop the timer when the game is exited
-      clearInterval(playTimer);
-      setPlayTimer(null);
-  
-      if (playTime >= 30) {
-        // Update total plays if the game was played for 30 seconds or more
-        try {
-          const response = await fetch(`/api/games/${grade}/${id}/incrementPlay`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-          const data = await response.json();
-          setTotalPlays(data.totalPlays || 0); // Update total plays
-        } catch (error) {
-          console.error("Failed to increment play count:", error);
-        }
+    if (!isGamePlaying) {
+      // User is starting to play the game
+      try {
+        await incrementPlayCount(); // Increment play count when starting the game
+      } catch (error) {
+        console.error("Failed to increment play count:", error);
       }
-    } else {
       setPlayTime(0); // Reset play time when game starts
       const timer = setInterval(() => {
         setPlayTime((prev) => prev + 1); // Increase play time by 1 second
       }, 1000);
       setPlayTimer(timer);
+    } else {
+      // User is quitting the game
+      clearInterval(playTimer);
+      setPlayTimer(null);
     }
+    
+    setIsGamePlaying((prev) => !prev); // Toggle game state
   };
-  
+
   const handleIframeLoad = () => {
     setIframeLoaded(true); // Set iframeLoaded to true when iframe is loaded
   };
-  
+
   if (!game) {
     return (
       <div className="text-center p-10">
@@ -145,30 +181,22 @@ export default function GameDetails() {
         {/* Game Title */}
         <h1 className="text-4xl font-bold text-gray-900 mb-4">{game.title}</h1>
         {/* Game Description */}
-      <p className="text-lg text-gray-600 mb-6 text-center max-w-2xl">
-        {game.description}
-      </p>
+        <p className="text-lg text-gray-600 mb-6 text-center max-w-2xl">
+          {game.description}
+        </p>
 
         {/* Rating Buttons */}
         <div className="flex items-center mb-4 space-x-4">
           <button
             onClick={() => handleRating("👍🏾")}
-            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
-              rating === "👍🏾"
-                ? "bg-green-500 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-500"
-            }`}
+            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${rating === "👍🏾" ? "bg-green-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-500"}`}
             title="Like this game"
           >
             <FaThumbsUp className="w-6 h-6" />
           </button>
           <button
             onClick={() => handleRating("👎🏾")}
-            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${
-              rating === "👎🏾"
-                ? "bg-red-500 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-500"
-            }`}
+            className={`flex items-center justify-center p-2 rounded-full transition-all duration-300 ${rating === "👎🏾" ? "bg-red-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-red-100 hover:text-red-500"}`}
             title="Dislike this game"
           >
             <FaThumbsDown className="w-6 h-6" />
@@ -212,7 +240,6 @@ export default function GameDetails() {
                 src={game.link} // External game link
                 style={{
                   position: "absolute",
-                  
                   top: 0,
                   left: "-15%",
                   right: 0,
@@ -269,7 +296,7 @@ export default function GameDetails() {
           }
         `}</style>
 
-<p className="text-sm text-gray-500 mt-6">Total Plays: {totalPlays}</p>
+        <p className="text-sm text-gray-500 mt-6">Total Plays: {totalPlays}</p>
       </motion.div>
 
       {/* Footer Section */}
