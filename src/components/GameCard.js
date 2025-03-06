@@ -29,10 +29,10 @@ export default function GameCard({ game }) {
       {/* Play Game Button */}
       <button
         onClick={handlePlayGame}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-yellow-600 text-white rounded-lg hover:from-green-700 hover:to-yellow-700 transition-all duration-300 group-hover:scale-105"
+        className="w-full flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-yellow-600 text-white rounded-lg hover:from-green-700 hover:to-yellow-700 transition-all duration-300 group-hover:scale-105"
       >
-        <FaPlay className="text-lg" />
-        Play Game
+        <FaPlay className="text-base sm:text-lg" />
+        <span className="text-sm sm:text-base font-medium">Play Game</span>
       </button>
 
   

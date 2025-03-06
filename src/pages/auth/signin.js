@@ -13,10 +13,9 @@ export default function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,21 +26,15 @@ export default function SignIn() {
       const data = await response.json();
       
       if (response.ok) {
-        // Store the token and account type
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("accountType", data.accountType);
-        
-        // Dispatch custom event to notify other components
-        window.dispatchEvent(new Event('authChange'));
-        
-        // Redirect to home page
-        router.push("/");
+        // Store account type in localStorage for dashboard
+        localStorage.setItem('accountType', accountType);
+        // Redirect to dashboard after successful sign in
+        router.push('/dashboard');
       } else {
-        setError(data.error || "An error occurred during sign in");
+        setError(data.message || "Invalid email or password");
       }
     } catch (error) {
-      console.error("Sign in error:", error);
-      setError("An error occurred during sign in");
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -93,6 +86,29 @@ export default function SignIn() {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 ease-in-out transform hover:scale-105"
                 required
               />
+            </div>
+
+            {/* Account Type Select */}
+            <div className="mb-5">
+              <label htmlFor="accountType" className="block text-sm text-gray-700 mb-2">
+                Sign in as
+              </label>
+              <select
+                id="accountType"
+                value={accountType}
+                onChange={(e) => setAccountType(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 ease-in-out transform hover:scale-105"
+                required
+              >
+                <option value="parent">Parent</option>
+                <option value="institution">Educational Institution</option>
+              </select>
+              <p className="mt-2 text-sm text-gray-500">
+                {accountType === 'parent' 
+                  ? "Access your parent dashboard to monitor your children's progress"
+                  : "Access your institution dashboard to manage student accounts"
+                }
+              </p>
             </div>
 
             {/* Error Message */}

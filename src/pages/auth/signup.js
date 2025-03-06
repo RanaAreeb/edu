@@ -106,7 +106,7 @@ export default function SignUp() {
             {/* Account Type Select */}
             <div className="mb-4">
               <label htmlFor="accountType" className="block text-sm text-gray-700 mb-2">
-                Account Type
+                I am registering as
               </label>
               <select
                 id="accountType"
@@ -117,8 +117,13 @@ export default function SignUp() {
               >
                 <option value="parent">Parent</option>
                 <option value="institution">Educational Institution</option>
-                <option value="individual">Individual</option>
               </select>
+              <p className="mt-2 text-sm text-gray-500">
+                {accountType === 'parent' 
+                  ? "Create and monitor accounts for your children, track their progress and learning journey."
+                  : "Manage multiple student accounts, track class progress, and analyze learning outcomes."
+                }
+              </p>
             </div>
 
             {/* Display Error Message */}

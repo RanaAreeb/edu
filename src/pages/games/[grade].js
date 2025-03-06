@@ -63,47 +63,39 @@ export default function GradePage() {
 
       {/* Footer Section */}
       <footer className="bg-darkGreen text-white text-center py-4 mt-auto">
-        <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
+  <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
 
-        {/* Social Media Icons */}
-        <div className="flex justify-center space-x-6 mt-4">
-          <a
-            href="https://www.facebook.com/profile.php?id=61559394101077&sk=about"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-          </a>
+  {/* Social Media Icons */}
+  <div className="flex justify-center space-x-6 mt-4">
+    <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
+      <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+    </a>
+    <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
+      <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+    </a>
+  </div>
 
-          <a
-            href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-          </a>
-        </div>
-
-        {/* Legal Links (Terms and Conditions, Privacy Policy) */}
-        <div className="mt-4 text-sm">
-          <Link href="/terms-and-conditions" legacyBehavior>
-            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-              Terms and Conditions
-            </a>
-          </Link>
-          |
-          <Link href="/privacy-policy" legacyBehavior>
-            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-              Privacy Policy
-            </a>
-          </Link>
-          <Link href="/about" legacyBehavior>
+  {/* Legal Links */}
+  <div className="mt-4 text-sm">
+    <Link href="/" legacyBehavior>
+      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+        Terms and Conditions
+      </a>
+    </Link>
+    |
+    <Link href="/" legacyBehavior>
+      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+        Privacy Policy
+      </a>
+    </Link>
+    |
+    <Link href="/about" legacyBehavior>
       <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
         About
       </a>
     </Link>
-        </div>
-      </footer>
+  </div>
+</footer>
     </div>
   );
 }
