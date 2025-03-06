@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa"; // For next and previous buttons
 import { games } from "../data/games"; // Import the games data
 import GameCard from "../components/GameCard"; // Import the GameCard component
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaHandshake } from "react-icons/fa";
 export default function Home() {
   const [isMiddleSchool, setIsMiddleSchool] = useState(false); // State to toggle between Elementary and Middle School
 
@@ -181,6 +181,13 @@ export default function Home() {
     <Link href="/about" legacyBehavior>
       <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
         About
+      </a>
+    </Link>
+    |
+    <Link href="/partnership" legacyBehavior>
+      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2 flex items-center justify-center">
+        <FaHandshake className="mr-1" />
+        Partnership
       </a>
     </Link>
   </div>
