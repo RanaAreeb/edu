@@ -97,10 +97,10 @@ export default function SignUp() {
           <div className="backdrop-blur-md bg-white/90 rounded-2xl shadow-2xl overflow-hidden">
             {/* Logo Section */}
             <motion.div 
-              className="relative h-40 flex items-center justify-center bg-gradient-to-r from-darkGreen to-lightGreen p-6"
+              className="relative h-40 flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-500 p-6"
               variants={itemVariants}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-darkGreen to-lightGreen opacity-90"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-500 opacity-90"></div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -193,13 +193,21 @@ export default function SignUp() {
                 {/* Account Type Select */}
                 <motion.div variants={itemVariants} className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaUserCircle className="text-gray-400" />
+                    <FaUserCircle className="text-gray-400 z-10" />
                   </div>
                   <select
                     name="accountType"
                     value={formData.accountType}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border-b-2 border-gray-300 focus:border-darkGreen bg-transparent outline-none transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-3 border-b-2 border-gray-300 focus:border-darkGreen bg-white outline-none transition-all duration-300 appearance-none"
+                    style={{
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                      backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 0.5rem center',
+                      backgroundSize: '1.5em 1.5em'
+                    }}
                   >
                     <option value="parent">Parent</option>
                     <option value="institution">Educational Institution</option>

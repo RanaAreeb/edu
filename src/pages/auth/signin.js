@@ -81,10 +81,10 @@ export default function SignIn() {
           <div className="backdrop-blur-md bg-white/90 rounded-2xl shadow-2xl overflow-hidden">
             {/* Logo Section */}
             <motion.div 
-              className="relative h-40 flex items-center justify-center bg-gradient-to-r from-darkGreen to-lightGreen p-6"
+              className="relative h-40 flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-500 p-6"
               variants={itemVariants}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-darkGreen to-lightGreen opacity-90"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-700 to-gray-500 opacity-90"></div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -106,11 +106,19 @@ export default function SignIn() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
                   <div className="relative">
-                    <FaUserCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <FaUserCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10" />
                     <select
                       value={accountType}
                       onChange={(e) => setAccountType(e.target.value)}
-                      className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-darkGreen focus:border-transparent"
+                      className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-darkGreen focus:border-transparent appearance-none bg-white"
+                      style={{
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none',
+                        backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 0.5rem center',
+                        backgroundSize: '1.5em 1.5em'
+                      }}
                     >
                       <option value="student">Student</option>
                       <option value="parent">Parent</option>

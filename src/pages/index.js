@@ -120,7 +120,7 @@ export default function Home() {
         <p className="text-center text-sm md:text-lg text-white mb-4 md:mb-6">
           Our games are designed to make learning fun and engaging for all grade levels.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <Link href="/games/Math">
             <div className="bg-lightGreen p-4 md:p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
               <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-4">Math Games</h3>
@@ -139,9 +139,17 @@ export default function Home() {
           </Link>
           <Link href="/games/Language Arts">
             <div className="bg-lightGreen p-4 md:p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
-              <h3 className="text-lg md:text-xl font-semibold  mb-2 md:mb-4">Language Arts Games</h3>
+              <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-4">Language Arts Games</h3>
               <div className="w-16 h-16 md:w-20 md:h-20 bg-lightYellow rounded-full flex items-center justify-center mx-auto">
                 <span className="text-xl md:text-2xl text-primary">✏️</span>
+              </div>
+            </div>
+          </Link>
+          <Link href="/games/Other">
+            <div className="bg-lightGreen p-4 md:p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer">
+              <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-4">Other Games</h3>
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-lightYellow rounded-full flex items-center justify-center mx-auto">
+                <span className="text-xl md:text-2xl text-primary">🎮</span>
               </div>
             </div>
           </Link>
