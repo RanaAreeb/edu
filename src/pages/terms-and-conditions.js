@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaShieldAlt, FaHandshake, FaUserShield, FaBalanceScale, FaFacebook, FaInstagram } from 'react-icons/fa';
+import { FaShieldAlt, FaHandshake, FaUserShield, FaBalanceScale, FaFacebook, FaInstagram, FaHome } from 'react-icons/fa';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -47,6 +47,15 @@ export default function TermsAndConditions() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
+          <Link href="/" className="inline-block mb-8">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 bg-darkGreen text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300"
+            >
+              <FaHome className="text-xl" />
+              <span>Back to Home</span>
+            </motion.div>
+          </Link>
           <FaBalanceScale className="text-6xl text-darkGreen mx-auto mb-6" />
           <h1 className="text-4xl font-bold text-darkGreen mb-4">Terms and Conditions</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">

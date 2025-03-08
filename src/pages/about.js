@@ -9,7 +9,8 @@ import {
   FaLightbulb,
   FaAward,
   FaFacebook,
-  FaInstagram
+  FaInstagram,
+  FaHome
 } from 'react-icons/fa';
 
 const fadeInUp = {
@@ -68,8 +69,17 @@ export default function About() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-16 relative"
         >
+          <Link href="/" className="inline-block mb-8">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 bg-darkGreen text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300"
+            >
+              <FaHome className="text-xl" />
+              <span>Back to Home</span>
+            </motion.div>
+          </Link>
           <motion.div
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.3 }}

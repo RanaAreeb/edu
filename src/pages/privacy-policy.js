@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaLock, FaUserSecret, FaDatabase, FaCookie, FaShieldAlt, FaFacebook, FaInstagram } from 'react-icons/fa';
+import { FaLock, FaUserSecret, FaDatabase, FaCookie, FaShieldAlt, FaFacebook, FaInstagram, FaHome } from 'react-icons/fa';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -47,6 +47,15 @@ export default function PrivacyPolicy() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
+          <Link href="/" className="inline-block mb-8">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 bg-darkGreen text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-300"
+            >
+              <FaHome className="text-xl" />
+              <span>Back to Home</span>
+            </motion.div>
+          </Link>
           <motion.div
             whileHover={{ rotate: 360 }}
             transition={{ duration: 1 }}
