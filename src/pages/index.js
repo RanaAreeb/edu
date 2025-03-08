@@ -157,47 +157,64 @@ export default function Home() {
       </div>
 
       {/* Footer Section */}
-       {/* Footer Section */}
-       {/* Footer Section */}
-<footer className="bg-darkGreen text-white text-center py-4 mt-auto">
-  <p className="text-sm md:text-lg">© Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved</p>
+<footer className="bg-darkGreen text-white py-4">
+  <div className="container mx-auto px-4">
+    {/* Main Footer Content */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+      {/* Left Section - Logo and Social Media */}
+      <div className="flex flex-col items-center md:items-start">
+        <Image
+          src="/EFG_Games.jpg"
+          alt="EFG Games Logo"
+          width={120}
+          height={120}
+          className="rounded-full mb-4"
+        />
+        {/* Social Media Icons */}
+        <div className="flex space-x-4">
+          <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
+            <FaFacebook className="ml-4 text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+          <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
+            <FaInstagram className="ml-3 text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+        </div>
+      </div>
 
-  {/* Social Media Icons */}
-  <div className="flex justify-center space-x-6 mt-4">
-    <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
-      <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-    </a>
-    <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
-      <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-    </a>
-  </div>
+      {/* Right Section - Legal Links */}
+      <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-2 gap-y-2 text-3xs">
+        <Link href="/terms-and-conditions" legacyBehavior>
+          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+            Terms and Conditions
+          </a>
+        </Link>
+        <span className="text-gray-400">•</span>
+        <Link href="/privacy-policy" legacyBehavior>
+          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+            Privacy Policy
+          </a>
+        </Link>
+        <span className="text-gray-400">•</span>
+        <Link href="/about" legacyBehavior>
+          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+            About
+          </a>
+        </Link>
+        <span className="text-gray-400">•</span>
+        <Link href="/partnership" legacyBehavior>
+          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+            Partnership
+          </a>
+        </Link>
+      </div>
+    </div>
 
-  {/* Legal Links */}
-  <div className="mt-4 px-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs md:text-sm">
-    <Link href="/terms-and-conditions" legacyBehavior>
-      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
-        Terms and Conditions
-      </a>
-    </Link>
-    <span className="text-gray-400">•</span>
-    <Link href="/privacy-policy" legacyBehavior>
-      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
-        Privacy Policy
-      </a>
-    </Link>
-    <span className="text-gray-400">•</span>
-    <Link href="/about" legacyBehavior>
-      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
-        About
-      </a>
-    </Link>
-    <span className="text-gray-400">•</span>
-    <Link href="/partnership" legacyBehavior>
-      <a className="text-white hover:text-lightGreen transition-colors duration-300 inline-flex items-center whitespace-nowrap">
-       
-        Partnership
-      </a>
-    </Link>
+    {/* Copyright Text - At the very bottom */}
+    <div className="border-t border-gray-600 mt-4 pt-4">
+      <p className="text-[14px] text-center text-gray-400">
+        © Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved
+      </p>
+    </div>
   </div>
 </footer>
 

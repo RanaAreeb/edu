@@ -69,7 +69,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex flex-col justify-between min-h-screen bg-gradient-to-b from-lightGreen to-darkGreen">
+    <div className="flex flex-col justify-between min-h-screen bg-lightGreen">
       <div className="flex justify-center items-center flex-1 px-4">
         <motion.div
           initial="hidden"
@@ -95,7 +95,7 @@ export default function SignIn() {
                   alt="EFG Games Logo"
                   width={120}
                   height={120}
-                  className="rounded-full shadow-xl"
+                  className="rounded-full "
                 />
               </motion.div>
             </motion.div>
@@ -120,9 +120,9 @@ export default function SignIn() {
                         backgroundSize: '1.5em 1.5em'
                       }}
                     >
-                      <option value="student">Student</option>
+                      <option value="student">Player</option>
                       <option value="parent">Parent</option>
-                      <option value="institution">Educational Institution</option>
+                      <option value="institution">Educator</option>
                     </select>
                   </div>
                 </div>
@@ -189,39 +189,68 @@ export default function SignIn() {
         </motion.div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-darkGreen/90 backdrop-blur-md text-white text-center py-4">
-        <p className="text-sm">© 2025 EFG Games. All rights reserved.</p>
-        <div className="flex justify-center space-x-6 mt-4">
-          <motion.a
-            whileHover={{ scale: 1.1 }}
-            href="https://www.facebook.com/profile.php?id=61559394101077&sk=about"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-lightGreen transition-colors duration-300"
-          >
-            <FaFacebook className="text-2xl" />
-          </motion.a>
-          <motion.a
-            whileHover={{ scale: 1.1 }}
-            href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-lightGreen transition-colors duration-300"
-          >
-            <FaInstagram className="text-2xl" />
-          </motion.a>
+     
+      {/* Footer Section */}
+<footer className="bg-darkGreen text-white py-4">
+  <div className="container mx-auto px-4">
+    {/* Main Footer Content */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+      {/* Left Section - Logo and Social Media */}
+      <div className="flex flex-col items-center md:items-start">
+        <Image
+          src="/EFG_Games.jpg"
+          alt="EFG Games Logo"
+          width={120}
+          height={120}
+          className="rounded-full mb-4"
+        />
+        {/* Social Media Icons */}
+        <div className="flex space-x-4">
+          <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
+            <FaFacebook className="ml-4 text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+          <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
+            <FaInstagram className="ml-3 text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
         </div>
-        <div className="mt-4 flex justify-center items-center space-x-4 text-sm">
-          <Link href="/terms-and-conditions" className="hover:text-lightGreen transition-colors duration-300">
-            Terms
-          </Link>
-          <span>•</span>
-          <Link href="/privacy-policy" className="hover:text-lightGreen transition-colors duration-300">
-            Privacy
-          </Link>
-        </div>
-      </footer>
+      </div>
+
+      {/* Right Section - Legal Links */}
+      <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-2 gap-y-2 text-3xs">
+        <Link href="/terms-and-conditions" legacyBehavior>
+          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+            Terms and Conditions
+          </a>
+        </Link>
+        <span className="text-gray-400">•</span>
+        <Link href="/privacy-policy" legacyBehavior>
+          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+            Privacy Policy
+          </a>
+        </Link>
+        <span className="text-gray-400">•</span>
+        <Link href="/about" legacyBehavior>
+          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+            About
+          </a>
+        </Link>
+        <span className="text-gray-400">•</span>
+        <Link href="/partnership" legacyBehavior>
+          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+            Partnership
+          </a>
+        </Link>
+      </div>
+    </div>
+
+    {/* Copyright Text - At the very bottom */}
+    <div className="border-t border-gray-600 mt-4 pt-4">
+      <p className="text-[14px] text-center text-gray-400">
+        © Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved
+      </p>
+    </div>
+  </div>
+</footer>
     </div>
   );
 }
