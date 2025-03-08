@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa"; // For next and previous buttons
 import { games } from "../data/games"; // Import the games data
 import GameCard from "../components/GameCard"; // Import the GameCard component
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaHandshake } from "react-icons/fa";
+import { FaFacebook,  FaInstagram } from "react-icons/fa";
 export default function Home() {
   const [isMiddleSchool, setIsMiddleSchool] = useState(false); // State to toggle between Elementary and Middle School
 
@@ -152,7 +152,7 @@ export default function Home() {
        {/* Footer Section */}
        {/* Footer Section */}
 <footer className="bg-darkGreen text-white text-center py-4 mt-auto">
-  <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
+  <p className="text-sm md:text-lg">© Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved</p>
 
   {/* Social Media Icons */}
   <div className="flex justify-center space-x-6 mt-4">
@@ -165,28 +165,28 @@ export default function Home() {
   </div>
 
   {/* Legal Links */}
-  <div className="mt-4 text-sm">
+  <div className="mt-4 px-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs md:text-sm">
     <Link href="/" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         Terms and Conditions
       </a>
     </Link>
-    |
+    <span className="text-gray-400">•</span>
     <Link href="/" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         Privacy Policy
       </a>
     </Link>
-    |
+    <span className="text-gray-400">•</span>
     <Link href="/about" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         About
       </a>
     </Link>
-    |
+    <span className="text-gray-400">•</span>
     <Link href="/partnership" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2 flex items-center justify-center">
-        <FaHandshake className="mr-1" />
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 inline-flex items-center whitespace-nowrap">
+       
         Partnership
       </a>
     </Link>

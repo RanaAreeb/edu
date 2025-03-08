@@ -1,18 +1,13 @@
-import { MongoClient } from 'mongodb';
+import { getMongoDb } from '../../../utils/mongodb';
 import { games } from '../../../data/games';
-
-const MONGODB_URI = process.env.MONGODB_URI;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const client = new MongoClient(MONGODB_URI);
-
   try {
-    await client.connect();
-    const db = client.db();
+    const db = await getMongoDb();
     const gamesCollection = db.collection('games');
 
     // First, check if games already exist
@@ -38,7 +33,5 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error initializing games:', error);
     return res.status(500).json({ error: 'Failed to initialize games' });
-  } finally {
-    await client.close();
   }
 } 

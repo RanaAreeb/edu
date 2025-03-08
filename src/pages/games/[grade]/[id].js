@@ -28,6 +28,9 @@ export default function GameDetails() {
   const [iframeLoaded, setIframeLoaded] = useState(false); // To track iframe load
   const [hasIncrementedPlay, setHasIncrementedPlay] = useState(false);
 
+  const [startTime, setStartTime] = useState(null);
+  const [gameSession, setGameSession] = useState(null);
+
   // Check if device is mobile
   useEffect(() => {
     const checkMobile = () => {
@@ -213,6 +216,7 @@ export default function GameDetails() {
   const handlePlayOrExitGame = () => {
     if (!isGamePlaying) {
       // Starting the game
+      setStartTime(new Date());
       setPlayTime(0);
       setHasIncrementedPlay(false);
     } else {
@@ -220,6 +224,10 @@ export default function GameDetails() {
       if (playTimer) {
         clearInterval(playTimer);
         setPlayTimer(null);
+      }
+      // Track the game session when quitting
+      if (startTime) {
+        trackGameSession();
       }
       // Only reset play time if we haven't incremented yet
       if (!hasIncrementedPlay) {
@@ -242,6 +250,47 @@ export default function GameDetails() {
       }
     };
   }, []);
+
+  // Add this function to track the game session
+  const trackGameSession = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user || !user._id) {
+        console.error('No user found');
+        return;
+      }
+
+      const endTime = new Date();
+      const sessionData = {
+        studentId: user._id,
+        gameId: game.id,
+        gameTitle: game.title,
+        gameType: game.type || 'educational', // default type if not specified
+        startTime: startTime,
+        endTime: endTime,
+        score: 0, // You can update this based on actual game score if available
+        skillsGained: ['problem-solving'] // Update based on game skills
+      };
+
+      const response = await fetch('/api/students/track-game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sessionData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to track game session');
+      }
+
+      const data = await response.json();
+      console.log('Game session tracked:', data);
+      setGameSession(data.session);
+    } catch (error) {
+      console.error('Error tracking game session:', error);
+    }
+  };
 
   // Update the loading and error states rendering
   if (!router.isReady || isLoading) {
@@ -518,52 +567,48 @@ export default function GameDetails() {
         `}</style>
       </motion.div>
 
-      {/* Footer Section */}
-      <footer className="bg-darkGreen text-white text-center py-4 mt-auto w-full">
-        <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
+       {/* Footer Section */}
+<footer className="bg-darkGreen text-white text-center py-4 mt-auto">
+  <p className="text-sm md:text-lg">© Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved</p>
 
-        {/* Social Media Icons */}
-        <div className="flex justify-center space-x-6 mt-4">
-          <a
-            href="https://www.facebook.com/profile.php?id=61559394101077&sk=about"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-          </a>
+  {/* Social Media Icons */}
+  <div className="flex justify-center space-x-6 mt-4">
+    <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
+      <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+    </a>
+    <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
+      <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+    </a>
+  </div>
 
-          <a
-            href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-          </a>
-        </div>
-
-        {/* Legal Links (Terms and Conditions, Privacy Policy) */}
-       {/* Legal Links */}
   {/* Legal Links */}
-  <div className="mt-4 text-sm">
+  <div className="mt-4 px-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs md:text-sm">
     <Link href="/" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         Terms and Conditions
       </a>
     </Link>
-    |
+    <span className="text-gray-400">•</span>
     <Link href="/" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         Privacy Policy
       </a>
     </Link>
-    |
+    <span className="text-gray-400">•</span>
     <Link href="/about" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         About
       </a>
     </Link>
+    <span className="text-gray-400">•</span>
+    <Link href="/partnership" legacyBehavior>
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 inline-flex items-center whitespace-nowrap">
+       
+        Partnership
+      </a>
+    </Link>
   </div>
-      </footer>
+</footer>
     </>
   );
 }

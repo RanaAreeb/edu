@@ -1,4 +1,5 @@
-import { MongoClient } from 'mongodb';
+import { getMongoDb } from '../../../utils/mongodb';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,42 +12,46 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
-  const client = new MongoClient(process.env.MONGODB_URI);
-
   try {
-    await client.connect();
-    const db = client.db();
-    const users = db.collection('users');
+    const db = await getMongoDb();
+    
+    // Determine which collection to use based on account type
+    const collection = accountType === 'student' 
+      ? db.collection('students')
+      : db.collection('users');
 
-    // Find user by email
-    const user = await users.findOne({ email });
+    const user = await collection.findOne({ email });
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // In a real application, you should hash passwords and compare hashes
-    // This is just for demonstration
-    if (user.password !== password) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Check if account type matches
-    if (user.accountType !== accountType) {
-      return res.status(401).json({ message: 'Invalid account type for this user' });
-    }
+    // Update last login time
+    await collection.updateOne(
+      { email },
+      { $set: { lastLogin: new Date() } }
+    );
 
-    // Return success with user info (excluding password)
+    // Remove sensitive data before sending response
     const { password: _, ...userWithoutPassword } = user;
+
+    // Determine redirect path based on account type
+    const redirectTo = accountType === 'student' ? '/' : '/dashboard';
+
     return res.status(200).json({
-      message: 'Successfully signed in',
-      user: userWithoutPassword
+      message: 'Sign in successful',
+      user: userWithoutPassword,
+      redirectTo
     });
 
   } catch (error) {
-    console.error('Signin error:', error);
-    return res.status(500).json({ message: 'An error occurred. Please try again.' });
-  } finally {
-    await client.close();
+    console.error('Sign in error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 } 

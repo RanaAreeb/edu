@@ -1,7 +1,5 @@
-import { MongoClient } from 'mongodb';
+import { getMongoDb } from '../../../../../utils/mongodb';
 import { games } from '../../../../../data/games';  // Importing game data from the JS file
-
-const MONGODB_URI = process.env.MONGODB_URI;
 
 // Rate limiting map
 const rateLimit = new Map();
@@ -47,14 +45,10 @@ export default async (req, res) => {
     });
   }
 
-  // MongoDB client initialization
-  const client = new MongoClient(MONGODB_URI);
-
   if (req.method === 'POST') {
     try {
-      await client.connect(); // Connect to MongoDB
-      const db = client.db(); // Use the default database
-      const gamesCollection = db.collection('games'); // Target the games collection
+      const db = await getMongoDb();
+      const gamesCollection = db.collection('games');
 
       // Find the game in local data
       const game = games.find((g) => g.grade === grade && g.id.toString() === id);
@@ -118,16 +112,13 @@ export default async (req, res) => {
     } catch (error) {
       console.error('Error incrementing play count:', error);
       return res.status(500).json({ error: 'Internal server error' });
-    } finally {
-      await client.close(); // Close the MongoDB connection
     }
   }
 
   if (req.method === 'GET') {
     try {
-      await client.connect(); // Connect to MongoDB
-      const db = client.db(); // Use the default database
-      const gamesCollection = db.collection('games'); // Target the games collection
+      const db = await getMongoDb();
+      const gamesCollection = db.collection('games');
 
       // First try to find the game
       let dbGame = await gamesCollection.findOne({
@@ -168,8 +159,6 @@ export default async (req, res) => {
     } catch (error) {
       console.error('Error fetching game:', error);
       return res.status(500).json({ error: 'Internal server error' });
-    } finally {
-      await client.close(); // Close the MongoDB connection
     }
   }
 

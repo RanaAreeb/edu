@@ -1,188 +1,276 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { FaFacebook, FaInstagram } from "react-icons/fa"; // Import social media icons
+import { FaFacebook, FaInstagram, FaEnvelope, FaLock, FaUserCircle, FaUser } from "react-icons/fa";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function SignUp() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [accountType, setAccountType] = useState("parent"); // Default value set to 'parent'
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    accountType: "parent"
+  });
   const [error, setError] = useState("");
   const router = useRouter();
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    // Check if passwords match
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
 
-    // Send form data (email, password, accountType) to the API
-    const response = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password, accountType }),
-    });
+    // Validate password strength
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
 
-    const data = await response.json();
-    if (response.ok) {
-      router.push("/auth/signin"); // Redirect to the sign-in page after successful signup
-    } else {
-      setError(data.message || "An error occurred. Please try again."); // Show error message
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem('accountType', formData.accountType);
+        router.push('/dashboard');
+      } else {
+        setError(data.message || "Failed to create account");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.3 }
     }
   };
 
   return (
-    <div className="flex flex-col justify-between min-h-screen bg-lightGreen">
-      <div className="flex justify-center items-center flex-1">
-        <div className="w-full max-w-sm p-4 bg-white rounded-lg shadow-lg">
-          <header className="text-center p-6 md:p-8 bg-gradient-to-r text-white">
-            <div className="flex flex-col items-center justify-center">
-              <Image
-                src="/EFG_Games.jpg" // Logo path
-                alt="EFG Games Logo"
-                width={150} // Reduced logo size
-                height={150}
-                className="rounded-full"
-              />
-            </div>
-          </header>
-          <h2 className="text-2xl font-bold text-center text-primary mb-4">
-            Sign Up
-          </h2>
-
-          <form onSubmit={handleSubmit}>
-            {/* Email Input */}
-            <div className="mb-3">
-              <label htmlFor="email" className="block text-sm text-gray-700 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 ease-in-out transform hover:scale-105"
-                required
-              />
-            </div>
-
-            {/* Password Input */}
-            <div className="mb-3">
-              <label htmlFor="password" className="block text-sm text-gray-700 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 ease-in-out transform hover:scale-105"
-                required
-              />
-            </div>
-
-            {/* Confirm Password Input */}
-            <div className="mb-4">
-              <label htmlFor="confirmPassword" className="block text-sm text-gray-700 mb-2">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 ease-in-out transform hover:scale-105"
-                required
-              />
-            </div>
-
-            {/* Account Type Select */}
-            <div className="mb-4">
-              <label htmlFor="accountType" className="block text-sm text-gray-700 mb-2">
-                I am registering as
-              </label>
-              <select
-                id="accountType"
-                value={accountType}
-                onChange={(e) => setAccountType(e.target.value)}
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 ease-in-out transform hover:scale-105"
-                required
-              >
-                <option value="parent">Parent</option>
-                <option value="institution">Educational Institution</option>
-              </select>
-              <p className="mt-2 text-sm text-gray-500">
-                {accountType === 'parent' 
-                  ? "Create and monitor accounts for your children, track their progress and learning journey."
-                  : "Manage multiple student accounts, track class progress, and analyze learning outcomes."
-                }
-              </p>
-            </div>
-
-            {/* Display Error Message */}
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full py-2 mt-4 bg-primary text-white rounded-lg hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-300 ease-in-out transform hover:scale-105"
+    <div className="flex flex-col justify-between min-h-screen bg-gradient-to-b from-lightGreen to-darkGreen">
+      <div className="flex justify-center items-center flex-1 px-4 py-8">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="w-full max-w-md"
+        >
+          {/* Card Container */}
+          <div className="backdrop-blur-md bg-white/90 rounded-2xl shadow-2xl overflow-hidden">
+            {/* Logo Section */}
+            <motion.div 
+              className="relative h-40 flex items-center justify-center bg-gradient-to-r from-darkGreen to-lightGreen p-6"
+              variants={itemVariants}
             >
-              Sign Up
-            </button>
-          </form>
+              <div className="absolute inset-0 bg-gradient-to-r from-darkGreen to-lightGreen opacity-90"></div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative z-10"
+              >
+                <Image
+                  src="/EFG_Games.jpg"
+                  alt="EFG Games Logo"
+                  width={120}
+                  height={120}
+                  className="rounded-full shadow-xl"
+                />
+              </motion.div>
+            </motion.div>
 
-          {/* Link to Sign In */}
-          <p className="mt-4 text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <a href="/auth/signin" className="text-primary hover:underline">
-              Sign In
-            </a>
-          </p>
-        </div>
+            {/* Form Section */}
+            <div className="p-8">
+              <motion.h2 
+                variants={itemVariants}
+                className="text-2xl font-bold text-center text-darkGreen mb-8"
+              >
+                Create Your Account
+              </motion.h2>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Name Input */}
+                <motion.div variants={itemVariants} className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaUser className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border-b-2 border-gray-300 focus:border-darkGreen bg-transparent outline-none transition-all duration-300"
+                    placeholder="Full Name"
+                    required
+                  />
+                </motion.div>
+
+                {/* Email Input */}
+                <motion.div variants={itemVariants} className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaEnvelope className="text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border-b-2 border-gray-300 focus:border-darkGreen bg-transparent outline-none transition-all duration-300"
+                    placeholder="Email"
+                    required
+                  />
+                </motion.div>
+
+                {/* Password Input */}
+                <motion.div variants={itemVariants} className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaLock className="text-gray-400" />
+                  </div>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border-b-2 border-gray-300 focus:border-darkGreen bg-transparent outline-none transition-all duration-300"
+                    placeholder="Password"
+                    required
+                  />
+                </motion.div>
+
+                {/* Confirm Password Input */}
+                <motion.div variants={itemVariants} className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaLock className="text-gray-400" />
+                  </div>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border-b-2 border-gray-300 focus:border-darkGreen bg-transparent outline-none transition-all duration-300"
+                    placeholder="Confirm Password"
+                    required
+                  />
+                </motion.div>
+
+                {/* Account Type Select */}
+                <motion.div variants={itemVariants} className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaUserCircle className="text-gray-400" />
+                  </div>
+                  <select
+                    name="accountType"
+                    value={formData.accountType}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border-b-2 border-gray-300 focus:border-darkGreen bg-transparent outline-none transition-all duration-300"
+                  >
+                    <option value="parent">Parent</option>
+                    <option value="institution">Educational Institution</option>
+                  </select>
+                </motion.div>
+
+                {error && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-red-500 text-sm text-center"
+                  >
+                    {error}
+                  </motion.p>
+                )}
+
+                <motion.button
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="w-full py-3 bg-gradient-to-r from-darkGreen to-lightGreen text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  Create Account
+                </motion.button>
+              </form>
+
+              <motion.p 
+                variants={itemVariants}
+                className="mt-6 text-center text-gray-600"
+              >
+                Already have an account?{" "}
+                <Link href="/auth/signin" className="text-darkGreen hover:underline font-medium">
+                  Sign In
+                </Link>
+              </motion.p>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Footer Section */}
-      <footer className="bg-darkGreen text-white text-center py-4 mt-8 w-full">
-        <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
-
-        {/* Social Media Icons */}
+      {/* Footer */}
+      <footer className="bg-darkGreen/90 backdrop-blur-md text-white text-center py-4">
+        <p className="text-sm">© 2025 EFG Games. All rights reserved.</p>
         <div className="flex justify-center space-x-6 mt-4">
-          <a
+          <motion.a
+            whileHover={{ scale: 1.1 }}
             href="https://www.facebook.com/profile.php?id=61559394101077&sk=about"
             target="_blank"
             rel="noopener noreferrer"
+            className="hover:text-lightGreen transition-colors duration-300"
           >
-            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-          </a>
-
-          <a
+            <FaFacebook className="text-2xl" />
+          </motion.a>
+          <motion.a
+            whileHover={{ scale: 1.1 }}
             href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr"
             target="_blank"
             rel="noopener noreferrer"
+            className="hover:text-lightGreen transition-colors duration-300"
           >
-            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-          </a>
+            <FaInstagram className="text-2xl" />
+          </motion.a>
         </div>
-
-        {/* Legal Links (Terms and Conditions, Privacy Policy) */}
-        <div className="mt-4 text-sm">
-          <Link href="/terms-and-conditions" legacyBehavior>
-            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-              Terms and Conditions
-            </a>
+        <div className="mt-4 flex justify-center items-center space-x-4 text-sm">
+          <Link href="/terms-and-conditions" className="hover:text-lightGreen transition-colors duration-300">
+            Terms
           </Link>
-          |
-          <Link href="/privacy-policy" legacyBehavior>
-            <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-              Privacy Policy
-            </a>
+          <span>•</span>
+          <Link href="/privacy-policy" className="hover:text-lightGreen transition-colors duration-300">
+            Privacy
           </Link>
         </div>
       </footer>

@@ -61,9 +61,9 @@ export default function GradePage() {
         </div>
       </div>
 
-      {/* Footer Section */}
-      <footer className="bg-darkGreen text-white text-center py-4 mt-auto">
-  <p className="text-sm md:text-lg">© 2025 EFG Games. All rights reserved.</p>
+     {/* Footer Section */}
+<footer className="bg-darkGreen text-white text-center py-4 mt-auto">
+  <p className="text-sm md:text-lg">© Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved</p>
 
   {/* Social Media Icons */}
   <div className="flex justify-center space-x-6 mt-4">
@@ -76,22 +76,29 @@ export default function GradePage() {
   </div>
 
   {/* Legal Links */}
-  <div className="mt-4 text-sm">
+  <div className="mt-4 px-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs md:text-sm">
     <Link href="/" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         Terms and Conditions
       </a>
     </Link>
-    |
+    <span className="text-gray-400">•</span>
     <Link href="/" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         Privacy Policy
       </a>
     </Link>
-    |
+    <span className="text-gray-400">•</span>
     <Link href="/about" legacyBehavior>
-      <a className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         About
+      </a>
+    </Link>
+    <span className="text-gray-400">•</span>
+    <Link href="/partnership" legacyBehavior>
+      <a className="text-white hover:text-lightGreen transition-colors duration-300 inline-flex items-center whitespace-nowrap">
+       
+        Partnership
       </a>
     </Link>
   </div>

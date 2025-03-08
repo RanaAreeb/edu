@@ -6,6 +6,9 @@ export default function GameCard({ game }) {
   const router = useRouter();
 
   const handlePlayGame = () => {
+    console.log('Play button clicked');
+    console.log('Redirecting to:', `/games/${game.grade}/${game.id}`);
+    console.log('Game data:', game);
     // Redirect to the detailed game page with dynamic route for grade and id
     router.push(`/games/${game.grade}/${game.id}`);
   };

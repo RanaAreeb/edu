@@ -1,23 +1,50 @@
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
 
-// MongoDB connection URI (should be stored in your environment variable)
-const uri = process.env.MONGODB_URI; // Ensure this is set in your .env.local file
+if (!process.env.MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+}
 
-let cachedClient = null;
-let cachedDb = null;
+const uri = process.env.MONGODB_URI;
+const options = {
+  maxPoolSize: 10,
+  minPoolSize: 5,
+  retryWrites: true,
+  w: 'majority'
+};
 
-export async function connectToDatabase() {
-  if (cachedDb) {
-    // Return the cached database connection if it exists
-    return { client: cachedClient, db: cachedDb };
+let client;
+let clientPromise;
+
+if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+  // In development mode, use a global variable so that the value
+  // is preserved across module reloads caused by HMR (Hot Module Replacement).
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect();
   }
+  clientPromise = global._mongoClientPromise;
+} else {
+  // In production mode, it's best to not use a global variable.
+  client = new MongoClient(uri, options);
+  clientPromise = client.connect();
+}
 
-  const client = new MongoClient(uri);
-  await client.connect();
+export async function getMongoDb() {
+  try {
+    const client = await clientPromise;
+    const db = client.db();
+    return db;
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw new Error('Failed to connect to MongoDB');
+  }
+}
 
-  const db = client.db(); // Default database
-  cachedClient = client;
-  cachedDb = db;
-
-  return { client, db };
+export async function getMongoClient() {
+  try {
+    return await clientPromise;
+  } catch (error) {
+    console.error('MongoDB client error:', error);
+    throw new Error('Failed to get MongoDB client');
+  }
 }

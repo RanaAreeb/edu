@@ -1,6 +1,4 @@
-import { MongoClient } from 'mongodb';
-
-const MONGODB_URI = process.env.MONGODB_URI;
+import { getMongoDb } from '../../../../../utils/mongodb';
 
 export default async (req, res) => {
   if (req.method !== 'POST') {
@@ -14,11 +12,8 @@ export default async (req, res) => {
     return res.status(400).json({ error: 'Invalid action. Must be "like" or "dislike"' });
   }
 
-  const client = new MongoClient(MONGODB_URI);
-
   try {
-    await client.connect();
-    const db = client.db();
+    const db = await getMongoDb();
     const gamesCollection = db.collection('games');
 
     // Find the game first
@@ -77,7 +72,5 @@ export default async (req, res) => {
   } catch (error) {
     console.error('Error updating rating:', error);
     return res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    await client.close();
   }
 };

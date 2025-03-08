@@ -4,59 +4,44 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [accountType, setAccountType] = useState(null);
 
-  // Function to check if user is logged in
-  const checkLoginStatus = () => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem("token");
-      setIsLoggedIn(!!token);
-    }
-  };
-
-  // Set up effect to run on mount and listen for auth changes
+  // Check auth state on mount and route changes
   useEffect(() => {
-    setMounted(true);
-    checkLoginStatus();
-
-    // Listen for auth state changes
-    const handleStorageChange = (e) => {
-      if (e.key === 'token') {
-        checkLoginStatus();
-      }
+    const checkAuth = () => {
+      const user = localStorage.getItem('user');
+      const storedAccountType = localStorage.getItem('accountType');
+      setIsAuthenticated(!!user);
+      setAccountType(storedAccountType);
     };
 
-    // Listen for custom auth event
-    const handleAuthChange = () => {
-      checkLoginStatus();
-    };
+    // Check immediately
+    checkAuth();
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('authChange', handleAuthChange);
+    // Listen for route changes
+    router.events.on('routeChangeComplete', checkAuth);
+
+    // Listen for storage changes (in case of sign out in another tab)
+    window.addEventListener('storage', checkAuth);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('authChange', handleAuthChange);
+      router.events.off('routeChangeComplete', checkAuth);
+      window.removeEventListener('storage', checkAuth);
     };
-  }, []);
+  }, [router]);
 
-  // Handle Logout
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("accountType");
-    setIsLoggedIn(false);
-    
-    // Dispatch custom event for other components
-    window.dispatchEvent(new Event('authChange'));
-    
-    // Redirect to home page
+  const handleSignOut = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('accountType');
+    setIsAuthenticated(false);
+    setAccountType(null);
     router.push('/');
   };
 
-  // Don't render anything until after mount to prevent hydration mismatch
-  if (!mounted) {
+  // Don't show navigation on dashboard
+  if (router.pathname === '/dashboard') {
     return null;
   }
 
@@ -65,13 +50,13 @@ export default function Header() {
       {/* Centered Logo */}
       <div className="flex items-center">
         <Link href="/">
-          <Image src="/EFG_Games.jpg" alt="EFG Games Logo" width={100} height={100} />
+          <Image src="/EFG_Games.jpg" alt="EFG Games Logo" width={100} height={100} className="rounded-full" />
         </Link>
       </div>
 
       {/* Right Section with Navigation */}
       <nav className="flex items-center space-x-4">
-        {!isLoggedIn ? (
+        {!isAuthenticated ? (
           <>
             <Link
               href="/auth/signin"
@@ -87,12 +72,22 @@ export default function Header() {
             </Link>
           </>
         ) : (
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition duration-300"
-          >
-            Logout
-          </button>
+          <div className="flex items-center space-x-4">
+            {(accountType === 'parent' || accountType === 'institution') && (
+              <Link
+                href="/dashboard"
+                className="px-4 py-2 text-white hover:text-accent transition duration-300"
+              >
+                Dashboard
+              </Link>
+            )}
+            <button
+              onClick={handleSignOut}
+              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition duration-300"
+            >
+              Logout
+            </button>
+          </div>
         )}
       </nav>
     </header>
