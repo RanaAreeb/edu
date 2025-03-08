@@ -31,9 +31,11 @@ export default function GameDetails() {
   const [startTime, setStartTime] = useState(null);
   const [gameSession, setGameSession] = useState(null);
 
+  const [isProcessingRating, setIsProcessingRating] = useState(false);
+
   // Update the style objects at the top of the component
   const ratingButtonStyles = {
-    button: `flex flex-col items-center justify-center p-2 rounded-lg`,
+    button: `flex flex-col items-center justify-center p-2 rounded-lg ${isProcessingRating ? 'opacity-50 cursor-not-allowed' : ''}`,
     iconContainer: (isActive, type) => `
       p-2 rounded-lg transition-all duration-300 transform
       ${isActive 
@@ -44,6 +46,7 @@ export default function GameDetails() {
             ? "hover:bg-green-100 hover:text-green-500" 
             : "hover:bg-red-100 hover:text-red-500"}`
       }
+      ${isProcessingRating ? 'cursor-not-allowed' : ''}
     `,
     count: `text-sm mt-1`
   };
@@ -112,6 +115,10 @@ export default function GameDetails() {
       const user = JSON.parse(localStorage.getItem('user'));
       const userId = user?._id;
 
+      // Clear any existing rating from localStorage when fetching new data
+      localStorage.removeItem(`game-rating-${grade}-${id}`);
+      setRating(null);
+
       const response = await fetch(`/api/games/${grade}/${id}${userId ? `?userId=${userId}` : ''}`);
       const data = await response.json();
       
@@ -128,8 +135,8 @@ export default function GameDetails() {
         setLikes(data.game.likes || 0);
         setDislikes(data.game.dislikes || 0);
         
-        // Set user's rating if exists
-        if (data.userRating) {
+        // Only set rating if we have both a user and a rating from the database
+        if (userId && data.userRating) {
           setRating(data.userRating);
           localStorage.setItem(`game-rating-${grade}-${id}`, data.userRating);
         }
@@ -209,32 +216,9 @@ export default function GameDetails() {
         return;
       }
 
-      // Optimistic UI update
-      const previousRating = rating;
-      const previousLikes = likes;
-      const previousDislikes = dislikes;
-
-      // Update local state immediately for better UX
-      if (rating === action) {
-        // Removing the rating
-        setRating(null);
-        setLikes(action === 'like' ? likes - 1 : likes);
-        setDislikes(action === 'dislike' ? dislikes - 1 : dislikes);
-        localStorage.removeItem(`game-rating-${grade}-${id}`);
-      } else {
-        // Adding or changing rating
-        if (rating) {
-          // Changing rating
-          setLikes(rating === 'like' ? likes - 1 : likes + (action === 'like' ? 1 : 0));
-          setDislikes(rating === 'dislike' ? dislikes - 1 : dislikes + (action === 'dislike' ? 1 : 0));
-        } else {
-          // New rating
-          setLikes(action === 'like' ? likes + 1 : likes);
-          setDislikes(action === 'dislike' ? dislikes + 1 : dislikes);
-        }
-        setRating(action);
-        localStorage.setItem(`game-rating-${grade}-${id}`, action);
-      }
+      // Don't do anything if we're already processing a rating
+      if (isProcessingRating) return;
+      setIsProcessingRating(true);
 
       const response = await fetch(`/api/games/${grade}/${id}/like`, {
         method: "POST",
@@ -243,38 +227,65 @@ export default function GameDetails() {
         },
         body: JSON.stringify({ 
           action: rating === action ? 'remove' : action,
-          userId: user._id,
-          previousRating: rating 
+          userId: user._id
         }),
       });
       
       if (!response.ok) {
-        // Revert changes if request fails
-        setRating(previousRating);
-        setLikes(previousLikes);
-        setDislikes(previousDislikes);
-        localStorage.setItem(`game-rating-${grade}-${id}`, previousRating);
         throw new Error('Failed to update rating');
       }
 
       const data = await response.json();
-      if (data.error) {
-        // Revert changes if server returns error
-        setRating(previousRating);
-        setLikes(previousLikes);
-        setDislikes(previousDislikes);
-        localStorage.setItem(`game-rating-${grade}-${id}`, previousRating);
-        throw new Error(data.error);
-      }
-
-      // Update with server values
+      
+      // Update the state with the server response
       setLikes(data.likes);
       setDislikes(data.dislikes);
+      setRating(data.userRating);
+
+      // Update localStorage with the new rating
+      if (data.userRating) {
+        localStorage.setItem(`game-rating-${grade}-${id}`, data.userRating);
+      } else {
+        localStorage.removeItem(`game-rating-${grade}-${id}`);
+      }
+
     } catch (error) {
       console.error('Error updating rating:', error);
       alert('Failed to update rating. Please try again.');
+    } finally {
+      setIsProcessingRating(false);
     }
   };
+
+  // Add new function to validate user's current rating
+  const validateUserRating = async (userId) => {
+    try {
+      const response = await fetch(`/api/games/${grade}/${id}/rating?userId=${userId}`);
+      const data = await response.json();
+      return data.rating || null;
+    } catch (error) {
+      console.error('Error validating user rating:', error);
+      return null;
+    }
+  };
+
+  // Add effect to clear rating when user changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user || !user._id) {
+        // Clear rating when user logs out
+        setRating(null);
+        localStorage.removeItem(`game-rating-${grade}-${id}`);
+      } else {
+        // Refresh game data when user logs in
+        fetchGameData();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [grade, id]);
 
   // Handle comment submission
   const handleComment = async () => {

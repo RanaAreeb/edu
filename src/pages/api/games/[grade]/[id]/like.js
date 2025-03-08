@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     // Get the game document
     let game = await db.collection('games').findOne({
       grade: grade,
-      id: parseInt(id)
+      gameId: parseInt(id)
     });
 
     // If game not found in DB, initialize it from local data
@@ -26,9 +26,10 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: 'Game not found' });
       }
 
-      // Initialize the game in MongoDB
+      // Initialize the game in MongoDB with gameId
       game = {
         ...localGame,
+        gameId: parseInt(id),
         likes: 0,
         dislikes: 0,
         totalPlays: 0,
@@ -40,66 +41,42 @@ export default async function handler(req, res) {
       game._id = result.insertedId;
     }
 
-    // Initialize ratings collection if it doesn't exist
-    const userRating = await db.collection('gameRatings').findOne({
+    // First, remove any existing rating for this user and game
+    const existingRating = await db.collection('gameRatings').findOne({
       gameId: game._id,
       userId: userId
     });
 
-    let likes = game.likes || 0;
-    let dislikes = game.dislikes || 0;
-
-    if (action === 'remove') {
-      // Remove the previous rating
-      if (previousRating === 'like') {
-        likes = Math.max(0, likes - 1);
-      } else if (previousRating === 'dislike') {
-        dislikes = Math.max(0, dislikes - 1);
+    // Update the counts based on existing rating
+    if (existingRating) {
+      if (existingRating.rating === 'like') {
+        game.likes = Math.max(0, game.likes - 1);
+      } else if (existingRating.rating === 'dislike') {
+        game.dislikes = Math.max(0, game.dislikes - 1);
       }
-
-      // Remove the user's rating from the ratings collection
+      
+      // Remove the existing rating
       await db.collection('gameRatings').deleteOne({
         gameId: game._id,
         userId: userId
       });
-    } else {
-      // Handle new or changed rating
-      if (userRating) {
-        // User has rated before - update their rating
-        if (userRating.rating !== action) {
-          // User is changing their rating
-          if (userRating.rating === 'like') {
-            likes = Math.max(0, likes - 1);
-          } else if (userRating.rating === 'dislike') {
-            dislikes = Math.max(0, dislikes - 1);
-          }
+    }
 
-          if (action === 'like') {
-            likes++;
-          } else {
-            dislikes++;
-          }
+    // If not removing, add the new rating
+    if (action !== 'remove') {
+      // Add new rating
+      await db.collection('gameRatings').insertOne({
+        gameId: game._id,
+        userId: userId,
+        rating: action,
+        createdAt: new Date()
+      });
 
-          await db.collection('gameRatings').updateOne(
-            { gameId: game._id, userId: userId },
-            { $set: { rating: action, updatedAt: new Date() } }
-          );
-        }
-      } else {
-        // New rating
-        if (action === 'like') {
-          likes++;
-        } else {
-          dislikes++;
-        }
-
-        // Add new rating to ratings collection
-        await db.collection('gameRatings').insertOne({
-          gameId: game._id,
-          userId: userId,
-          rating: action,
-          createdAt: new Date()
-        });
+      // Update counts
+      if (action === 'like') {
+        game.likes++;
+      } else if (action === 'dislike') {
+        game.dislikes++;
       }
     }
 
@@ -108,17 +85,35 @@ export default async function handler(req, res) {
       { _id: game._id },
       { 
         $set: { 
-          likes, 
-          dislikes,
+          likes: game.likes, 
+          dislikes: game.dislikes,
           updatedAt: new Date()
         } 
       }
     );
 
-    // Log the update for debugging
-    console.log('Updated game ratings:', { likes, dislikes, userId, action });
+    // Get the user's current rating after all updates
+    const userRating = await db.collection('gameRatings').findOne({
+      gameId: game._id,
+      userId: userId
+    });
 
-    return res.status(200).json({ likes, dislikes });
+    // Log the update for debugging
+    console.log('Updated game ratings:', { 
+      gameId: game.gameId, 
+      likes: game.likes, 
+      dislikes: game.dislikes, 
+      userId, 
+      action,
+      existingRating: existingRating?.rating,
+      newRating: userRating?.rating || null
+    });
+
+    return res.status(200).json({ 
+      likes: game.likes, 
+      dislikes: game.dislikes,
+      userRating: userRating?.rating || null
+    });
   } catch (error) {
     console.error('Error updating rating:', error);
     return res.status(500).json({ error: 'Failed to update rating' });
