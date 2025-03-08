@@ -127,6 +127,8 @@ export default function GameDetails() {
         return;
       }
 
+      console.log('Fetched game data:', data); // Debug log
+
       if (data.game) {
         setGame(prevGame => ({
           ...prevGame,
@@ -135,14 +137,15 @@ export default function GameDetails() {
         setLikes(data.game.likes || 0);
         setDislikes(data.game.dislikes || 0);
         
+        // Set total plays from the game data
+        setTotalPlays(data.game.totalPlays || 0);
+        
         // Only set rating if we have both a user and a rating from the database
         if (userId && data.userRating) {
           setRating(data.userRating);
           localStorage.setItem(`game-rating-${grade}-${id}`, data.userRating);
         }
       }
-
-      setTotalPlays(data.totalPlays || 0);
     } catch (error) {
       console.error('Error fetching game data:', error);
       setError('Failed to load game data');
@@ -167,10 +170,19 @@ export default function GameDetails() {
         return;
       }
 
+      console.log('Play count response:', data); // Debug log
+
+      // Update both game data and total plays
       if (data.game) {
-        setGame(data.game);
+        setGame(prevGame => ({
+          ...prevGame,
+          ...data.game
+        }));
       }
-      if (data.totalPlays !== undefined) {
+      
+      // Explicitly update total plays from the response
+      if (typeof data.totalPlays === 'number') {
+        console.log('Updating total plays to:', data.totalPlays); // Debug log
         setTotalPlays(data.totalPlays);
       }
     } catch (error) {
@@ -187,6 +199,7 @@ export default function GameDetails() {
           const newTime = prev + 1;
           // Increment play count after 30 seconds
           if (newTime === 30 && !hasIncrementedPlay) {
+            console.log('Triggering play count increment'); // Debug log
             incrementPlayCount();
             setHasIncrementedPlay(true);
             // Clear the interval after incrementing
@@ -204,7 +217,7 @@ export default function GameDetails() {
         clearInterval(timer);
       }
     };
-  }, [isGamePlaying, hasIncrementedPlay]);
+  }, [isGamePlaying, hasIncrementedPlay, grade, id]); // Added grade and id to dependencies
 
   // Handle rating update
   const handleRating = async (action) => {
@@ -321,7 +334,10 @@ export default function GameDetails() {
       }
       // Track the game session when quitting
       if (startTime) {
-        trackGameSession();
+        trackGameSession().catch(error => {
+          console.error('Failed to track game session:', error);
+          // Don't show error to user, just log it
+        });
       }
       // Only reset play time if we haven't incremented yet
       if (!hasIncrementedPlay) {
@@ -345,12 +361,17 @@ export default function GameDetails() {
     };
   }, []);
 
-  // Add this function to track the game session
+  // Update the trackGameSession function with better error handling
   const trackGameSession = async () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user || !user._id) {
-        console.error('No user found');
+        console.log('No user found, skipping session tracking');
+        return;
+      }
+
+      if (!startTime) {
+        console.log('No start time recorded, skipping session tracking');
         return;
       }
 
@@ -359,11 +380,11 @@ export default function GameDetails() {
         studentId: user._id,
         gameId: game.id,
         gameTitle: game.title,
-        gameType: game.type || 'educational', // default type if not specified
-        startTime: startTime,
-        endTime: endTime,
-        score: 0, // You can update this based on actual game score if available
-        skillsGained: ['problem-solving'] // Update based on game skills
+        gameType: game.type || 'educational',
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        score: 0,
+        skillsGained: ['problem-solving']
       };
 
       const response = await fetch('/api/students/track-game', {
@@ -375,7 +396,8 @@ export default function GameDetails() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to track game session');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to track game session');
       }
 
       const data = await response.json();
@@ -383,6 +405,8 @@ export default function GameDetails() {
       setGameSession(data.session);
     } catch (error) {
       console.error('Error tracking game session:', error);
+      // Don't throw the error, just log it
+      // This prevents the unhandled runtime error from appearing to the user
     }
   };
 

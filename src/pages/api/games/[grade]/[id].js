@@ -11,13 +11,13 @@ export default async function handler(req, res) {
     const { grade, id } = req.query;
     const userId = req.query.userId;
 
-    // First try to get the game from MongoDB
+    // Get the game document
     let game = await db.collection('games').findOne({
       grade: grade,
-      id: parseInt(id)
+      gameId: parseInt(id)
     });
 
-    // If game not found in DB, check local data and initialize in DB
+    // If game not found in DB, initialize it from local data
     if (!game) {
       const localGame = games.find(g => g.grade === grade && g.id.toString() === id);
       
@@ -25,22 +25,47 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: 'Game not found' });
       }
 
-      // Initialize the game in MongoDB with default values
+      // Get total plays from gamePlays collection before initializing
+      const totalPlays = await db.collection('gamePlays').countDocuments({
+        grade: grade,
+        gameId: parseInt(id)
+      });
+
+      // Initialize the game in MongoDB with gameId and existing total plays
       game = {
         ...localGame,
+        gameId: parseInt(id),
         likes: 0,
         dislikes: 0,
-        totalPlays: 0,
+        totalPlays: totalPlays || 0,
         createdAt: new Date(),
         updatedAt: new Date()
       };
 
-      // Insert the game into MongoDB
       const result = await db.collection('games').insertOne(game);
       game._id = result.insertedId;
     }
 
-    // If userId is provided, get user's rating
+    // Always get the latest total plays count
+    const totalPlays = await db.collection('gamePlays').countDocuments({
+      grade: grade,
+      gameId: parseInt(id)
+    });
+
+    // Update the game document with current total plays
+    await db.collection('games').updateOne(
+      { _id: game._id },
+      { $set: { 
+          totalPlays: totalPlays || 0,
+          updatedAt: new Date()
+        } 
+      }
+    );
+
+    // Get the updated game document
+    game = await db.collection('games').findOne({ _id: game._id });
+
+    // Get user's rating if userId provided
     let userRating = null;
     if (userId) {
       const ratingDoc = await db.collection('gameRatings').findOne({
@@ -52,31 +77,16 @@ export default async function handler(req, res) {
       }
     }
 
-    // Get total plays
-    const totalPlays = await db.collection('gamePlays').countDocuments({
-      gameId: game._id
-    }) || 0;
-
-    // Ensure likes and dislikes are numbers
-    game.likes = game.likes || 0;
-    game.dislikes = game.dislikes || 0;
-
-    // Log the response for debugging
-    console.log('Sending game data:', {
-      game: {
-        ...game,
-        _id: game._id.toString()
-      },
-      totalPlays,
+    // Log for debugging
+    console.log('Fetching game data:', {
+      gameId: game.gameId,
+      totalPlays: game.totalPlays,
+      userId,
       userRating
     });
 
     return res.status(200).json({
-      game: {
-        ...game,
-        _id: game._id.toString() // Convert ObjectId to string
-      },
-      totalPlays,
+      game,
       userRating
     });
   } catch (error) {
