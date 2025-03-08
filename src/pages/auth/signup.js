@@ -250,11 +250,11 @@ export default function SignUp() {
       </div>
 
       
-      {/* Footer Section */}
+     {/* Footer Section */}
 <footer className="bg-darkGreen text-white py-4">
   <div className="container mx-auto px-4">
     {/* Main Footer Content */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
       {/* Left Section - Logo and Social Media */}
       <div className="flex flex-col items-center md:items-start">
         <Image
@@ -265,12 +265,12 @@ export default function SignUp() {
           className="rounded-full mb-4"
         />
         {/* Social Media Icons */}
-        <div className="flex space-x-4">
+        <div className="flex space-x-12">
           <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
-            <FaFacebook className="ml-4 text-2xl hover:text-lightGreen transition-colors duration-300" />
+            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
           </a>
           <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
-            <FaInstagram className="ml-3 text-2xl hover:text-lightGreen transition-colors duration-300" />
+            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
           </a>
         </div>
       </div>
