@@ -10,6 +10,8 @@ import {
   FaTrophy,
   FaUsers,
   FaHome,
+  FaFacebook,
+  FaInstagram
 } from 'react-icons/fa';
 import { Line, Bar, Radar } from 'react-chartjs-2';
 import {
@@ -381,7 +383,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Dashboard Header */}
       <header className="bg-darkGreen text-white shadow-lg">
         <div className="container mx-auto px-4 py-6">
@@ -658,16 +660,47 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Legal Links (Terms and Conditions, Privacy Policy) */}
-      <div className="mt-4 text-sm">
-        <Link href="/terms-and-conditions" className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-          Terms and Conditions
-        </Link>
-        |
-        <Link href="/privacy-policy" className="text-white hover:text-gray-400 transition-colors duration-300 mx-2">
-          Privacy Policy
-        </Link>
-      </div>
+      {/* Footer Section */}
+      <footer className="bg-darkGreen text-white text-center py-4 mt-auto">
+        <p className="text-sm md:text-lg">© Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved</p>
+
+        {/* Social Media Icons */}
+        <div className="flex justify-center space-x-6 mt-4">
+          <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
+            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+          <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
+            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+          </a>
+        </div>
+
+        {/* Legal Links */}
+        <div className="mt-4 px-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs md:text-sm">
+          <Link href="/" legacyBehavior>
+            <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+              Terms and Conditions
+            </a>
+          </Link>
+          <span className="text-gray-400">•</span>
+          <Link href="/" legacyBehavior>
+            <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+              Privacy Policy
+            </a>
+          </Link>
+          <span className="text-gray-400">•</span>
+          <Link href="/about" legacyBehavior>
+            <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+              About
+            </a>
+          </Link>
+          <span className="text-gray-400">•</span>
+          <Link href="/partnership" legacyBehavior>
+            <a className="text-white hover:text-lightGreen transition-colors duration-300 inline-flex items-center whitespace-nowrap">
+              Partnership
+            </a>
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 } 

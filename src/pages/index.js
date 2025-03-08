@@ -166,13 +166,13 @@ export default function Home() {
 
   {/* Legal Links */}
   <div className="mt-4 px-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs md:text-sm">
-    <Link href="/" legacyBehavior>
+    <Link href="/terms-and-conditions" legacyBehavior>
       <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         Terms and Conditions
       </a>
     </Link>
     <span className="text-gray-400">•</span>
-    <Link href="/" legacyBehavior>
+    <Link href="/privacy-policy" legacyBehavior>
       <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
         Privacy Policy
       </a>
