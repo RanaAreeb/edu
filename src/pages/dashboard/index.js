@@ -11,7 +11,8 @@ import {
   FaUsers,
   FaHome,
   FaFacebook,
-  FaInstagram
+  FaInstagram,
+  FaSignOutAlt
 } from 'react-icons/fa';
 import { Line, Bar, Radar } from 'react-chartjs-2';
 import {
@@ -386,57 +387,29 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Dashboard Header */}
       <header className="bg-darkGreen text-white shadow-lg">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold">
+        <div className="container mx-auto px-4 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">
               {accountType === 'parent' ? 'Parent Dashboard' : 'Institution Dashboard'}
             </h1>
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="flex items-center px-4 py-2 bg-white text-darkGreen rounded-lg hover:bg-gray-100 transition-all duration-300">
-                <FaHome className="mr-2" />
-                <span>Back to Main Site</span>
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <Link 
+                href="/" 
+                className="flex items-center px-3 sm:px-4 py-2 bg-white text-darkGreen rounded-lg hover:bg-gray-100 transition-all duration-300"
+                aria-label="Back to Main Site"
+              >
+                <FaHome className="text-xl sm:mr-2" />
+                <span className="hidden sm:inline">Back to Main Site</span>
               </Link>
               <button
                 onClick={handleSignOut}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300"
+                className="flex items-center px-3 sm:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-300"
+                aria-label="Sign Out"
               >
-                Sign Out
+                <FaSignOutAlt className="text-xl sm:mr-2" />
+                <span className="hidden sm:inline">Sign Out</span>
               </button>
             </div>
-          </div>
-          <div className="mt-4 flex items-center text-sm">
-            <nav className="flex space-x-4">
-              <button
-                onClick={() => setActiveTab('overview')}
-                className={`px-3 py-2 rounded-lg transition-colors ${
-                  activeTab === 'overview'
-                    ? 'bg-white text-darkGreen'
-                    : 'text-white hover:bg-green-700'
-                }`}
-              >
-                Overview
-              </button>
-              <button
-                onClick={() => setActiveTab('students')}
-                className={`px-3 py-2 rounded-lg transition-colors ${
-                  activeTab === 'students'
-                    ? 'bg-white text-darkGreen'
-                    : 'text-white hover:bg-green-700'
-                }`}
-              >
-                Students
-              </button>
-              <button
-                onClick={() => setActiveTab('sessions')}
-                className={`px-3 py-2 rounded-lg transition-colors ${
-                  activeTab === 'sessions'
-                    ? 'bg-white text-darkGreen'
-                    : 'text-white hover:bg-green-700'
-                }`}
-              >
-                Game Sessions
-              </button>
-            </nav>
           </div>
         </div>
       </header>
