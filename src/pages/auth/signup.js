@@ -210,7 +210,7 @@ export default function SignUp() {
                     }}
                   >
                     <option value="parent">Parent</option>
-                    <option value="institution">Educational Institution</option>
+                    <option value="institution">Educator</option>
                   </select>
                 </motion.div>
 

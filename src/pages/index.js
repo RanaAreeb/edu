@@ -11,6 +11,46 @@ export default function Home() {
   const [isMiddleSchool, setIsMiddleSchool] = useState(false); // State to toggle between Elementary and Middle School
   const [isAntHovered, setIsAntHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [characterState, setCharacterState] = useState('idle'); // idle, dancing, reading, sleeping, writing, greeting
+  const [playerName, setPlayerName] = useState('');
+  const [showGreeting, setShowGreeting] = useState(true);
+
+  // Get player name from localStorage if they're signed in
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (user) {
+      const userData = JSON.parse(user);
+      setPlayerName(userData.name || '');
+    }
+  }, []);
+
+  // Character state cycle with more states and smarter timing
+  useEffect(() => {
+    const states = [
+      { state: 'greeting', duration: 5000 },
+      { state: 'dancing', duration: 6000 },
+      { state: 'reading', duration: 7000 },
+      { state: 'thinking', duration: 5000 },
+      { state: 'writing', duration: 6000 },
+      { state: 'celebrating', duration: 4000 },
+      { state: 'sleeping', duration: 5000 },
+      { state: 'teaching', duration: 6000 }
+    ];
+    
+    let currentIndex = 0;
+    let timer;
+    
+    const cycleStates = () => {
+      if (!isAntHovered) {
+        setCharacterState(states[currentIndex].state);
+        currentIndex = (currentIndex + 1) % states.length;
+        timer = setTimeout(cycleStates, states[currentIndex].duration);
+      }
+    };
+
+    timer = setTimeout(cycleStates, states[0].duration);
+    return () => clearTimeout(timer);
+  }, [isAntHovered]);
 
   // Detect mobile device
   useEffect(() => {
@@ -48,9 +88,112 @@ export default function Home() {
     featuredGameIds.includes(game.id)
   );
 
+  const getCharacterAnimations = (state) => {
+    const baseAnimations = {
+      body: { scale: 1 },
+      tentacles: { scale: 1 },
+      eyes: { scale: 1 },
+      mouth: { d: "M50 70 Q60 80 70 70" }
+    };
+
+    switch(state) {
+      case 'dancing':
+        return {
+          body: {
+            rotate: [0, -10, 10, -10, 0],
+            y: [0, -10, 0, -5, 0],
+            transition: { duration: 2, repeat: Infinity }
+          },
+          tentacles: {
+            rotate: [-20, 20, -20],
+            transition: { duration: 1, repeat: Infinity }
+          }
+        };
+      case 'celebrating':
+        return {
+          body: {
+            scale: [1, 1.2, 1],
+            rotate: [0, 360],
+            transition: { duration: 2, repeat: Infinity }
+          },
+          tentacles: {
+            rotate: [-45, 45],
+            transition: { duration: 0.5, repeat: Infinity }
+          }
+        };
+      case 'thinking':
+        return {
+          body: { rotate: [-5, 5], transition: { duration: 2, repeat: Infinity } },
+          tentacles: { y: [-5, 5], transition: { duration: 1.5, repeat: Infinity } },
+          eyes: { scale: 1.2 }
+        };
+      case 'teaching':
+        return {
+          body: { y: [-5, 5], transition: { duration: 2, repeat: Infinity } },
+          tentacles: {
+            x: [-10, 10],
+            transition: { duration: 1, repeat: Infinity, staggerChildren: 0.1 }
+          }
+        };
+      case 'reading':
+        return {
+          body: { rotate: 15, transition: { duration: 0.5 } },
+          book: { scale: 1.2, transition: { duration: 0.5 } }
+        };
+      case 'sleeping':
+        return {
+          body: { rotate: 0, y: [0, 2, 0], transition: { duration: 2, repeat: Infinity } },
+          eyes: { scaleY: 0.1 },
+          mouth: { d: "M50 75 Q60 75 70 75" }
+        };
+      case 'writing':
+        return {
+          body: { rotate: -5 },
+          tentacles: { x: [-5, 5, -5], transition: { duration: 1, repeat: Infinity } }
+        };
+      case 'greeting':
+        return {
+          body: { scale: 1.1, transition: { duration: 0.5 } },
+          tentacles: { y: [-10, 0, -10], transition: { duration: 1, repeat: Infinity } }
+        };
+      default:
+        return {
+          body: { scale: 1 },
+          tentacles: { scale: 1 }
+        };
+    }
+  };
+
+  const getCharacterMessage = () => {
+    if (showGreeting) {
+      return playerName 
+        ? `Hi ${playerName}! I'm Zulu, your learning buddy! 🎓` 
+        : "Hi! I'm Zulu! What's your name? Sign in to chat with me! 👋";
+    }
+
+    switch(characterState) {
+      case 'dancing':
+        return "Let's make learning fun! 🎉";
+      case 'reading':
+        return "Books are like magical adventures! 📚";
+      case 'thinking':
+        return "Hmm... solving this problem! 🤔";
+      case 'writing':
+        return "Taking notes helps remember better! ✍️";
+      case 'celebrating':
+        return "You're doing great! Keep it up! 🌟";
+      case 'sleeping':
+        return "Even learning heroes need rest! 😴";
+      case 'teaching':
+        return "Let me show you something cool! 🎯";
+      default:
+        return "Ready to learn something new? 🎓";
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-lightYellow">
-      {/* Animated Squid Character with improved mobile support */}
+      {/* Animated Character */}
       <motion.div
         className="fixed bottom-4 right-4 z-50 cursor-pointer"
         animate={{
@@ -61,11 +204,21 @@ export default function Home() {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        onHoverStart={() => !isMobile && setIsAntHovered(true)}
-        onHoverEnd={() => !isMobile && setIsAntHovered(false)}
+        onHoverStart={() => {
+          if (!isMobile) {
+            setIsAntHovered(true);
+            setCharacterState('greeting');
+          }
+        }}
+        onHoverEnd={() => {
+          if (!isMobile) {
+            setIsAntHovered(false);
+            setCharacterState('idle');
+          }
+        }}
         onTouchStart={handleInteraction}
         role="button"
-        aria-label="Learning assistant"
+        aria-label="Zulu - Learning Assistant"
       >
         <svg
           width="120"
@@ -73,119 +226,164 @@ export default function Home() {
           viewBox="0 0 120 120"
           className="w-20 h-20 md:w-32 md:h-32"
         >
+          <defs>
+            <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#66BB6A" />
+              <stop offset="100%" stopColor="#4CAF50" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
           <motion.g
-            animate={isAntHovered ? {
-              rotate: [0, -5, 5, -5, 0],
-              scale: 1.1
-            } : {}}
-            transition={{ duration: 0.8 }}
+            animate={getCharacterAnimations(characterState).body}
           >
-            {/* Main Body */}
+            {/* Enhanced Main Body with Gradient */}
             <motion.path
-              d="M60 30 C40 30 25 45 25 70 C25 95 45 105 60 105 C75 105 95 95 95 70 C95 45 80 30 60 30"
-              fill="#4CAF50"
+              d="M60 25 
+                 C35 25 20 40 20 70 
+                 C20 100 45 110 60 110 
+                 C75 110 100 100 100 70 
+                 C100 40 85 25 60 25"
+              fill="url(#bodyGradient)"
               stroke="#2D3748"
               strokeWidth="2"
-              animate={{
-                scale: [1, 1.05, 1],
-                transition: { duration: 2, repeat: Infinity }
-              }}
+              filter="url(#glow)"
             />
 
-            {/* Eyes */}
-            <g>
-              <circle cx="45" cy="55" r="8" fill="white" />
-              <circle cx="75" cy="55" r="8" fill="white" />
+            {/* Enhanced Eyes with Shine */}
+            <motion.g
+              animate={
+                characterState === 'sleeping' ? { scaleY: 0.1 } :
+                characterState === 'thinking' ? { scale: 1.2 } :
+                characterState === 'celebrating' ? { scale: [1, 1.2, 1] } :
+                { scale: 1 }
+              }
+            >
+              {/* Left Eye */}
+              <circle cx="45" cy="55" r="10" fill="white" />
               <motion.circle 
                 cx="45" 
                 cy="55" 
-                r="4" 
-                fill="#2D3748"
-                animate={isAntHovered ? {
-                  scale: [1, 1.2, 1]
-                } : {}}
-                transition={{ duration: 0.5, repeat: Infinity }}
+                r="5" 
+                fill="#1A237E"
+                animate={characterState === 'sleeping' ? {} : {
+                  scale: [1, 1.2, 1],
+                  transition: { duration: 2, repeat: Infinity }
+                }}
               />
+              <circle cx="43" cy="53" r="2" fill="white" />
+
+              {/* Right Eye */}
+              <circle cx="75" cy="55" r="10" fill="white" />
               <motion.circle 
                 cx="75" 
                 cy="55" 
-                r="4" 
-                fill="#2D3748"
-                animate={isAntHovered ? {
-                  scale: [1, 1.2, 1]
-                } : {}}
-                transition={{ duration: 0.5, repeat: Infinity }}
+                r="5" 
+                fill="#1A237E"
+                animate={characterState === 'sleeping' ? {} : {
+                  scale: [1, 1.2, 1],
+                  transition: { duration: 2, repeat: Infinity }
+                }}
               />
-            </g>
+              <circle cx="73" cy="53" r="2" fill="white" />
+            </motion.g>
 
-            {/* Happy Mouth */}
+            {/* Enhanced Mouth with Better Expressions */}
             <motion.path
-              d="M50 70 Q60 80 70 70"
+              d={
+                characterState === 'sleeping' ? "M45 75 Q60 75 75 75" :
+                characterState === 'celebrating' ? "M45 70 Q60 85 75 70" :
+                characterState === 'thinking' ? "M45 75 Q60 70 75 75" :
+                "M45 70 Q60 80 75 70"
+              }
               stroke="#2D3748"
-              strokeWidth="2"
+              strokeWidth="3"
               fill="none"
-              animate={isAntHovered ? {
-                d: ["M50 70 Q60 80 70 70", "M50 75 Q60 85 70 75"]
-              } : {}}
-              transition={{ duration: 0.5 }}
+              strokeLinecap="round"
             />
 
-            {/* Tentacles */}
+            {/* Enhanced Tentacles with Gradient */}
             {[1, 2, 3, 4, 5].map((i) => (
               <motion.path
                 key={`tentacle-${i}`}
-                d={`M${35 + i * 10} 90 Q${35 + i * 10} 110 ${30 + i * 10} 115`}
-                stroke="#4CAF50"
-                strokeWidth="3"
+                d={`M${35 + i * 10} 95 
+                   Q${35 + i * 10} 115 ${30 + i * 12} 120`}
+                stroke="url(#bodyGradient)"
+                strokeWidth="4"
+                strokeLinecap="round"
                 fill="none"
-                animate={{
-                  d: [
-                    `M${35 + i * 10} 90 Q${35 + i * 10} 110 ${30 + i * 10} 115`,
-                    `M${35 + i * 10} 90 Q${40 + i * 10} 105 ${35 + i * 10} 110`,
-                    `M${35 + i * 10} 90 Q${35 + i * 10} 110 ${30 + i * 10} 115`
-                  ]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: i * 0.2
-                }}
+                animate={
+                  characterState === 'dancing' 
+                    ? { rotate: [-20, 20, -20], transition: { duration: 1, repeat: Infinity, delay: i * 0.1 } }
+                    : characterState === 'writing'
+                    ? { x: [-5, 5, -5], transition: { duration: 1, repeat: Infinity, delay: i * 0.1 } }
+                    : characterState === 'greeting'
+                    ? { y: [-10, 0, -10], transition: { duration: 1, repeat: Infinity, delay: i * 0.1 } }
+                    : { scale: 1 }
+                }
               />
             ))}
 
-            {/* Graduation Cap */}
+            {/* Enhanced Graduation Cap */}
             <motion.g
-              animate={isAntHovered ? {
-                rotate: [-5, 5, -5],
-                y: [-2, 2, -2]
+              animate={characterState === 'dancing' ? {
+                rotate: [-10, 10, -10],
+                transition: { duration: 1, repeat: Infinity }
               } : {}}
-              transition={{ duration: 1, repeat: Infinity }}
             >
-              <path
-                d="M40 35 L80 35 L60 20 Z"
-                fill="#2D3748"
-              />
-              <rect
-                x="55"
-                y="25"
-                width="10"
-                height="10"
-                fill="#2D3748"
-              />
-              <motion.path
-                d="M60 35 L60 40"
+              <path 
+                d="M40 35 L80 35 L60 20 Z" 
+                fill="#1A237E"
                 stroke="#2D3748"
-                strokeWidth="2"
-                animate={{
-                  rotate: [0, 10, -10, 0]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
+                strokeWidth="1"
+              />
+              <rect 
+                x="55" 
+                y="25" 
+                width="10" 
+                height="10" 
+                fill="#1A237E"
+                stroke="#2D3748"
+                strokeWidth="1"
+              />
+              <circle 
+                cx="60" 
+                cy="35" 
+                r="3" 
+                fill="#FFD700"
               />
             </motion.g>
+
+            {/* State-specific Props with Enhanced Styling */}
+            {characterState === 'thinking' && (
+              <motion.g
+                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, 0] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <circle cx="85" cy="35" r="8" fill="#E3F2FD" stroke="#1A237E" strokeWidth="2" />
+                <text x="82" y="38" fontSize="12" fill="#1A237E" fontWeight="bold">?</text>
+              </motion.g>
+            )}
+
+            {characterState === 'teaching' && (
+              <motion.g
+                animate={{ x: [-5, 5], rotate: [-5, 5] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <rect x="85" y="50" width="20" height="25" fill="#E3F2FD" stroke="#1A237E" strokeWidth="2" rx="3" />
+                <line x1="88" y1="58" x2="102" y2="58" stroke="#1A237E" strokeWidth="2" strokeLinecap="round" />
+                <line x1="88" y1="65" x2="102" y2="65" stroke="#1A237E" strokeWidth="2" strokeLinecap="round" />
+              </motion.g>
+            )}
           </motion.g>
         </svg>
 
-        {/* Improved Mobile Tooltip */}
+        {/* Character Message Bubble */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ 
@@ -195,22 +393,13 @@ export default function Home() {
           }}
           className={`absolute ${
             isMobile 
-              ? 'bottom-full left-1/2 transform -translate-x-1/2 mb-4 w-48 text-center' 
-              : 'bottom-full right-0 mb-2'
-          } bg-lightGreen text-white px-4 py-2 rounded-lg shadow-lg text-sm whitespace-normal`}
+              ? 'bottom-full left-1/2 transform -translate-x-1/2 mb-4 w-64 text-center' 
+              : 'bottom-full right-0 mb-2 w-64'
+          } bg-lightGreen text-white px-4 py-3 rounded-lg shadow-lg text-sm whitespace-normal`}
         >
           <div className="relative">
-            {isMobile ? (
-              <>
-                Ready to learn something new? 🎓
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-lightGreen rotate-45"></div>
-              </>
-            ) : (
-              <>
-                Ready to learn something new? 🎓
-                <div className="absolute -bottom-2 right-6 w-3 h-3 bg-lightGreen rotate-45"></div>
-              </>
-            )}
+            {getCharacterMessage()}
+            <div className={`absolute -bottom-2 ${isMobile ? 'left-1/2 transform -translate-x-1/2' : 'right-6'} w-3 h-3 bg-lightGreen rotate-45`}></div>
           </div>
         </motion.div>
 
