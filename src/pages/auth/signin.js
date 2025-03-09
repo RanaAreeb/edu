@@ -34,8 +34,15 @@ export default function SignIn() {
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('accountType', accountType);
         
-        // Redirect to the appropriate page
-        router.push(data.redirectTo);
+        // Check for returnUrl in query parameters
+        const returnUrl = router.query.returnUrl;
+        if (returnUrl) {
+          // Decode the URL and redirect back to the game
+          router.push(decodeURIComponent(returnUrl));
+        } else {
+          // Default redirect if no returnUrl
+          router.push(data.redirectTo);
+        }
       } else {
         setError(data.message || "Invalid email or password");
       }
@@ -155,6 +162,15 @@ export default function SignIn() {
                   </div>
                 </div>
 
+                <div className="flex items-center justify-between text-sm">
+                  <Link href="/auth/reset-password" className="text-darkGreen hover:text-accent transition-colors duration-300">
+                    Reset Password
+                  </Link>
+                  <Link href="/auth/signup" className="text-darkGreen hover:text-accent">
+                    Sign up
+                  </Link>
+                </div>
+
                 {error && (
                   <motion.p
                     initial={{ opacity: 0 }}
@@ -168,7 +184,7 @@ export default function SignIn() {
                 <motion.button
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full py-3 bg-darkGreen text-white rounded-lg hover:bg-accent transition-colors duration-300 ${
+                  className={`w-full py-3 bg-darkGreen text-white rounded-lg hover:bg-opacity-90 transition-colors duration-300 ${
                     isLoading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                   whileHover={{ scale: 1.02 }}
@@ -176,13 +192,6 @@ export default function SignIn() {
                 >
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </motion.button>
-
-                <p className="text-sm text-center text-gray-600">
-                  Don't have an account?{' '}
-                  <Link href="/auth/signup" className="text-darkGreen hover:text-accent">
-                    Sign up
-                  </Link>
-                </p>
               </motion.form>
             </div>
           </div>

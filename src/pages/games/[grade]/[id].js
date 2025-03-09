@@ -6,7 +6,7 @@ import { games } from "../../../data/games"; // Importing the game data directly
 import { FaFacebook, FaInstagram } from "react-icons/fa"; // Import social media icons
 import Link from "next/link"; // Import Link for Terms and Privacy links
 import { MdScreenRotation } from "react-icons/md"; // Import rotation icon
-
+import Image from 'next/image';
 export default function GameDetails() {
   const router = useRouter();
   const { grade, id } = router.query; // Get grade and id from URL
@@ -225,7 +225,9 @@ export default function GameDetails() {
       // Get user from localStorage
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user || !user._id) {
-        alert('Please log in to rate the game');
+        // Redirect to sign-in page with return URL
+        const returnUrl = `/games/${grade}/${id}`;
+        router.push(`/auth/signin?returnUrl=${encodeURIComponent(returnUrl)}`);
         return;
       }
 
@@ -264,7 +266,7 @@ export default function GameDetails() {
 
     } catch (error) {
       console.error('Error updating rating:', error);
-      alert('Failed to update rating. Please try again.');
+      setError('Failed to update rating. Please try again.');
     } finally {
       setIsProcessingRating(false);
     }

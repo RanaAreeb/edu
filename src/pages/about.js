@@ -12,6 +12,7 @@ import {
   FaInstagram,
   FaHome
 } from 'react-icons/fa';
+import Image from 'next/image';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -151,25 +152,52 @@ export default function About() {
           transition={{ delay: 0.5 }}
           className="bg-white rounded-xl shadow-lg p-8 mb-16"
         >
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold text-darkGreen mb-6 text-center">Founder's Story</h2>
-            <div className="space-y-6 text-gray-600 leading-relaxed">
-              <p>
-                Clifton Manneh is the founder of EFG Games which is dedicated to making learning fun and engaging for students of all grades. 
-                Our games cover various subjects such as math, science, coding, and language arts, providing an interactive experience to help 
-                students improve their skills.
-              </p>
-              <p>
-                Our platform is designed to cater to both elementary and middle school students, with age-appropriate content that aligns with 
-                the curriculum. We believe that learning should be enjoyable, and our games aim to foster a love for learning.
-              </p>
-              <div className="bg-gray-50 p-6 rounded-lg my-8">
-                <p className="italic">
-                  "In addition to EFG Games, Clifton is also the founder of Tutorants, a community and mentorship-based platform that provides 
-                  24-hour tutoring to students in need of academic support. Tutorants has 5,000 expert tutors specializing in all academic disciplines."
-                </p>
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-darkGreen mb-10 text-center">Founder's Story</h2>
+            
+            {/* Founder Image and Initial Text */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-10">
+              {/* Image Container - Takes 5 columns on desktop */}
+              <div className="md:col-span-5 flex justify-center">
+                <div className="relative w-[280px] h-[350px] rounded-2xl overflow-hidden shadow-lg">
+                  <Image
+                    src="/image.png"
+                    alt="Clifton Manneh - Founder of EFG Games"
+                    fill
+                    className="object-cover"
+                    priority
+                    sizes="(max-width: 768px) 280px, 350px"
+                  />
+                </div>
               </div>
-              <p>
+
+              {/* Text Container - Takes 7 columns on desktop */}
+              <div className="md:col-span-7 flex flex-col justify-center space-y-6">
+                <div className="prose prose-lg">
+                  <p className="text-gray-700 leading-relaxed text-lg">
+                    Clifton Manneh is the founder of EFG Games which is dedicated to making learning fun and engaging for students of all grades. 
+                    Our games cover various subjects such as math, science, coding, and language arts, providing an interactive experience to help 
+                    students improve their skills.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed text-lg mt-4">
+                    Our platform is designed to cater to both elementary and middle school students, with age-appropriate content that aligns with 
+                    the curriculum. We believe that learning should be enjoyable, and our games aim to foster a love for learning.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Quote Section */}
+            <div className="bg-gradient-to-r from-darkGreen/5 to-lightGreen/5 p-8 rounded-xl my-10 shadow-sm">
+              <p className="italic text-gray-700 text-lg leading-relaxed text-center">
+                "In addition to EFG Games, Clifton is also the founder of Tutorants, a community and mentorship-based platform that provides 
+                24-hour tutoring to students in need of academic support. Tutorants has 5,000 expert tutors specializing in all academic disciplines."
+              </p>
+            </div>
+
+            {/* Additional Story */}
+            <div className="prose prose-lg max-w-none">
+              <p className="text-gray-700 leading-relaxed text-lg">
                 Clifton's journey towards creating EFG Games began in Monrovia, Liberia, where he was born, and his dedication to education 
                 was further fueled by the loss of his little sister and the hardships his family faced. With a degree in Organizational 
                 Communications from Metropolitan State University, Clifton has transformed his personal experiences into a mission to make 
@@ -197,68 +225,69 @@ export default function About() {
         </motion.div>
       </main>
 
-     
-     {/* Footer Section */}
-<footer className="bg-darkGreen text-white py-4">
-  <div className="container mx-auto px-4">
-    {/* Main Footer Content */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
-      {/* Left Section - Logo and Social Media */}
-      <div className="flex flex-col items-center md:items-start">
-        <Image
-          src="/EFG_Games.jpg"
-          alt="EFG Games Logo"
-          width={120}
-          height={120}
-          className="rounded-full mb-4"
-        />
-        {/* Social Media Icons */}
-        <div className="flex space-x-12">
-          <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
-            <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-          </a>
-          <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
-            <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
-          </a>
+      {/* Footer Section */}
+      <footer className="bg-darkGreen text-white py-4">
+        <div className="container mx-auto px-4">
+          {/* Main Footer Content */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
+            {/* Left Section - Logo and Social Media */}
+            <div className="flex flex-col items-center md:items-start">
+              <div className="relative w-[120px] h-[120px] mb-4">
+                <Image
+                  src="/EFG_Games.jpg"
+                  alt="EFG Games Logo"
+                  fill
+                  className="rounded-full object-cover"
+                  priority
+                />
+              </div>
+              {/* Social Media Icons */}
+              <div className="flex space-x-12">
+                <a href="https://www.facebook.com/profile.php?id=61559394101077&sk=about" target="_blank" rel="noopener noreferrer">
+                  <FaFacebook className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+                </a>
+                <a href="https://www.instagram.com/efggames?igsh=MTR3aHpyaHM5ZXhoaw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">
+                  <FaInstagram className="text-2xl hover:text-lightGreen transition-colors duration-300" />
+                </a>
+              </div>
+            </div>
+
+            {/* Right Section - Legal Links */}
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-2 gap-y-2 text-3xs">
+              <Link href="/terms-and-conditions" legacyBehavior>
+                <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+                  Terms and Conditions
+                </a>
+              </Link>
+              <span className="text-gray-400">•</span>
+              <Link href="/privacy-policy" legacyBehavior>
+                <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+                  Privacy Policy
+                </a>
+              </Link>
+              <span className="text-gray-400">•</span>
+              <Link href="/about" legacyBehavior>
+                <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+                  About
+                </a>
+              </Link>
+              <span className="text-gray-400">•</span>
+              <Link href="/partnership" legacyBehavior>
+                <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
+                  Partnership
+                </a>
+              </Link>
+            </div>
+          </div>
+
+          {/* Copyright Text - At the very bottom */}
+          <div className="border-t border-gray-600 mt-4 pt-4">
+            <p className="text-[14px] text-center text-gray-400">
+              © Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved
+            </p>
+          </div>
         </div>
-      </div>
-
-      {/* Right Section - Legal Links */}
-      <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-2 gap-y-2 text-3xs">
-        <Link href="/terms-and-conditions" legacyBehavior>
-          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
-            Terms and Conditions
-          </a>
-        </Link>
-        <span className="text-gray-400">•</span>
-        <Link href="/privacy-policy" legacyBehavior>
-          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
-            Privacy Policy
-          </a>
-        </Link>
-        <span className="text-gray-400">•</span>
-        <Link href="/about" legacyBehavior>
-          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
-            About
-          </a>
-        </Link>
-        <span className="text-gray-400">•</span>
-        <Link href="/partnership" legacyBehavior>
-          <a className="text-white hover:text-lightGreen transition-colors duration-300 whitespace-nowrap">
-            Partnership
-          </a>
-        </Link>
-      </div>
-    </div>
-
-    {/* Copyright Text - At the very bottom */}
-    <div className="border-t border-gray-600 mt-4 pt-4">
-      <p className="text-[14px] text-center text-gray-400">
-        © Copyright 2025 EFG Games, a division of Konduct Coach Learning. All Rights Reserved
-      </p>
-    </div>
-  </div>
-</footer>
+      </footer>
     </div>
   );
 }
